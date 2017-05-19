@@ -1,0 +1,48 @@
+# Basic
+title: Felics
+subtitle: 万物之中，希望至美，至美之物，永不凋零
+welcome_message: 
+description: Life@Shanghai Work@WANDA
+creator: <a href="http://www.jikexingqiu.com">@极客星球</a>
+
+url: "http://felics.github.io"
+
+permalink: /:title/
+
+# Format
+highlighter: rouge
+
+# supported colors: blue, green, purple, red, orange or slate. If you need clear, leave it empty.
+cover_color: gray-lightest
+
+# The blog button should not be removed.
+blog_button:
+    title: 博客
+    description: 访问博客
+
+# Navigation buttons in the front page.
+nav:
+    - {title: 极客星球, description: 探索你不知道的，分享你知道的, url: 'http://www.jikexingqiu.com'}
+    # - {title: Another Button, description: A button, url: 'http://example.com'}
+
+# Pagination
+gems: [jekyll-paginate]
+paginate: 10
+paginate_path: "page/:num/"
+
+# Comment
+comment:
+    disqus: felics
+    # duoshuo: 
+    
+# Social
+social:
+    weibo: princecharming
+    github: felics
+    twitter: feinikesi
+    mail: huangthink@gmail.com
+
+# Google Analytics
+ga:
+    # id: your_ga_id
+    # host: your_host
