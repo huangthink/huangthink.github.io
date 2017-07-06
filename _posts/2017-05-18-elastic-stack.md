@@ -9,7 +9,7 @@ tags: [能工巧匠]
 
 - CentOS7.1
 - JDK1.8
-- elasticsearch-5.1.1
+- elasticsearch-5.4.3
 
 ### JDK安装配置
 
@@ -22,9 +22,9 @@ tags: [能工巧匠]
 
 ```
 cd /var/wd
-wget -N https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.tar.gz
-tar -zxf elasticsearch-5.1.1.tar.gz
-ln -s lasticsearch-5.1.1 elasticsearch
+wget -N https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.tar.gz
+tar -zxf elasticsearch-5.4.3.tar.gz
+ln -s lasticsearch-5.4.3 elasticsearch
 mkdir -p /var/data/elasticsearch
 mkdir -p /var/logs/elasticsearch
 ```
@@ -33,12 +33,12 @@ mkdir -p /var/logs/elasticsearch
 ```
 vi elasticsearch/config/elasticsearch.yml
 
-cluster.name: vg1212
+cluster.name: elasticstack
 path.data: /var/data/elasticsearch
 path.logs: /var/logs/elasticsearch
 network.host: 0.0.0.0
-http.port: 12200
-transport.tcp.port: 12300
+http.port: 11200
+transport.tcp.port: 11300
 discovery.zen.ping.unicast.hosts: ["10.213.162.77", "10.213.162.78", "10.213.162.79"]
 discovery.zen.minimum_master_nodes: 3
 http.cors.enabled: true
@@ -53,7 +53,7 @@ useradd  elasticsearch -g elasticsearch -p elasticsearch
 #### 更改相关文件夹以及内部文件的所属用户以及组为elasticsearch
 
 ```
-chown -R elasticsearch:elasticsearch /var/wd/elasticsearch-5.1.1
+chown -R elasticsearch:elasticsearch /var/wd/elasticsearch-5.4.3
 chown -R elasticsearch:elasticsearch /var/data/elasticsearch
 chown -R elasticsearch:elasticsearch /var/logs/elasticsearch
 ```
@@ -88,17 +88,17 @@ cd /var/wd/elasticsearch
 打开另一个终端进行测试
 
 ```
-curl  'http://10.213.162.77:12100'
+curl  'http://10.213.162.77:11200'
 ```
 你能看到以下返回信息：
 
 ```
 {
     name: "10.213.162.77",
-    cluster_name: "vg1212",
+    cluster_name: "elasticstack",
     cluster_uuid: "aHySi7cBS76DyrIe74eIoA",
     version: {
-        number: "5.1.1",
+        number: "5.4.3",
         build_hash: "5395e21",
         build_date: "2016-12-06T12:36:15.409Z",
         build_snapshot: false,
@@ -141,7 +141,7 @@ git clone git://github.com/mobz/elasticsearch-head.git
 connect: {
     server: {
         options: {
-            port: 12100,
+            port: 11100,
             hostname: '*',
             base: '.',
             keepalive: true
@@ -153,7 +153,7 @@ connect: {
 ##### 修改app.js
 
 ```
-this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http://10.213.162.77:12200";
+this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http://10.213.162.77:11200";
 ```
 
 ##### 运行head
@@ -170,11 +170,20 @@ grunt server
 
 ```
 cd /var/wd
-wget -N https://artifacts.elastic.co/downloads/kibana/kibana-5.1.1-linux-x86_64.tar.gz
-tar -zxf kibana-5.1.1-linux-x86_64.tar.gz
-ln -s kibana-5.1.1 kibana
+wget -N https://artifacts.elastic.co/downloads/kibana/kibana-5.4.3-linux-x86_64.tar.gz
+tar -zxf kibana-5.4.3-linux-x86_64.tar.gz
+ln -s kibana-5.4.3 kibana
 ```
 
+```
+vi kibana/config/kibana.yml
+
+server.port: 11201
+server.host: "0.0.0.0"
+elasticsearch.url: "http://10.213.162.78:11200"
+elasticsearch.username: "elastic"
+elasticsearch.password: "elastic"
+```
 ### X-Pack安装配置
 
 X-Pack是一个Elastic Stack的扩展，将安全，警报，监视，报告和图形功能包含在一个易于安装的软件包中。在Elasticsearch 5.0.0之前，您必须安装单独的Shield，Watcher和Marvel插件才能获得在X-Pack中所有的功能。
@@ -203,22 +212,20 @@ bin/kibana-plugin install x-pack
 
 #### 验证X-Pack
 
-在浏览器上输入： ```http://10.213.162.77:12201``` ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 ```elastic``` 和 ```changeme```
+在浏览器上输入： ```http://10.213.162.77:11201``` ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 ```elastic``` 和 ```changeme```
 
 ### 安装参考
 
 1. 每个操作系统安装Elasticsearch的文件选择不同，参考：```https://www.elastic.co/downloads/elasticsearch```，选择对应的文件下载。
 2. 安装Kiabna需要根据操作系统做选择，参考：```https://www.elastic.co/guide/en/kibana/current/install.html```，选择对应的文件下载。
-3. 安装X-Pack需要根据Elasticsearch安装不同的方式提供不同的安装方法，参考：```https://www.elastic.co/guide/en/x-pack/5.1/installing-xpack.html#installing-xpack```。
+3. 安装X-Pack需要根据Elasticsearch安装不同的方式提供不同的安装方法，参考：```https://www.elastic.co/guide/en/x-pack/5.4/installing-xpack.html#installing-xpack```。
 4. 离线安装 
 
 ```
-
-./bin/elasticsearch-plugin install file:///var/wd/x-pack-5.1.1.zip
-
-./bin/kibana-plugin install file:///var/wd/x-pack-5.1.1.zip
+./bin/elasticsearch-plugin install file:///var/wd/x-pack-5.4.3.zip
+./bin/kibana-plugin install file:///var/wd/x-pack-5.4.3.zip
 ```
 
 | App    | URL                          |
 | ------------ | -----------------------------|
-| x-pack   | https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.1.1.zip          |
+| x-pack   | https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.4.3.zip          |
