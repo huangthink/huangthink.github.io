@@ -118,7 +118,7 @@ ELasticsearch集群已经启动并且正常运行。
 cd /usr/local
 wget -N https://nodejs.org/dist/v7.2.0/node-v7.2.0-linux-x64.tar.gz
 tar -zxf node-v7.2.0-linux-x64.tar.gz
-ln -s node-v7.2.0-linux-x64/ node
+ln -s node-v7.2.0-linux-x64 node
 vi /etc/profile
 export PATH=$PATH:/usr/local/node/bin
 source /etc/profile
