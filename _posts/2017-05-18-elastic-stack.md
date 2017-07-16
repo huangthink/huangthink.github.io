@@ -24,7 +24,7 @@ tags: [能工巧匠]
 cd /var/wd
 wget -N https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.tar.gz
 tar -zxf elasticsearch-5.4.3.tar.gz
-ln -s lasticsearch-5.4.3 elasticsearch
+ln -s elasticsearch-5.4.3 elasticsearch
 mkdir -p /var/data/elasticsearch
 mkdir -p /var/logs/elasticsearch
 ```
@@ -162,7 +162,6 @@ this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http:
 npm install 
 grunt server
 ```
-### Logstash安装配置
 
 ### Kibana安装配置
 
@@ -229,3 +228,128 @@ bin/kibana-plugin install x-pack
 | App    | URL                          |
 | ------------ | -----------------------------|
 | x-pack   | https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.4.3.zip          |
+
+### Logstash安装
+Logstash 是一款强大的数据处理工具，它可以实现数据传输，格式处理，格式化输出，还有强大的插件功能，常用于日志处理。
+
+#### logstash版本要求
+| Kafka Client Version | Logstash Version | Plugin Version | Why?                         |
+| ------------ | ----------------------- | ----------- | --------------- |
+|   0.8        |   2.0.0 - 2.x.x   |   <3.0.0  | Legacy, 0.8 is still popular      |
+|   0.9        |   2.0.0 - 2.3.x   |   3.x.x   | Works with the old Ruby Event API (event['product']['price'] = 10)      |
+|   0.9        |   2.4.x - 5.x.x   |   4.x.x   | Works with the new getter/setter APIs (event.set('[product][price]', 10))      |
+|   0.10.0.x   |   2.4.x - 5.x.x   |   5.x.x   | Not compatible with the ⇐ 0.9 broker     |
+
+#### logstash下载安装
+```
+cd /var/wd/
+wget -c https://artifacts.elastic.co/downloads/logstash/logstash-5.4.3.tar.gz
+tar -xzvf logstash-5.4.3.tar.gz
+ln -s logstash-5.4.3 logstash
+cd logstash
+```
+##### 日志采集filebeat配置
+```
+mkdir plugin-config
+vi plugin-config/filebeat.conf
+
+```
+```
+input {
+    beats {
+        port => "10044"
+    }
+}
+# The filter part of this file is commented out to indicate that it is
+# optional.
+filter {
+	#grok根据日志格式配置
+   grok {
+        match => ["message", "%{TIMESTAMP_ISO8601:timestamp} %{WORD:trace_id} \[.*\] %{LOGLEVEL:level}"]
+        remove_field => [ "beat","tags"]
+     }
+  }
+output {
+	 #logstash直接输出到es
+     elasticsearch {
+        hosts => ["10.213.131.131:11200","10.213.131.132:11200","10.213.131.134:11200"]
+        index => "%{[@metadata][beat]}-%{+YYYY.MM}"
+        document_type => "%{[@metadata][type]}"
+     }
+}
+```
+##### 启动logstash
+控台启动，观察错误日志，没问题在后台启动
+```
+bin/logstash -f plugin-config/filebeat.conf --config.reload.automatic
+```
+
+### Filebeat安装
+Beats 平台是 Elastic.co 从 packetbeat 发展出来的数据收集器系统。beat 收集器可以直接写入 Elasticsearch，也可以传输给 Logstash。其中抽象出来的 libbeat，提供了统一的数据发送方法，输入配置解析，日志记录框架等功能。也就是说，所有的 beat 工具，在配置上，除了 input 以外，在output、filter、shipper、logging、run-options 上的配置规则都是完全一致的 ，filebeat是beat中的一员。
+
+#### filebeat下载
+```
+cd /var/wd/
+wget -c https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-linux-x86_64.tar.gz
+tar -xzvf filebeat-5.4.3-linux-x86_64.tar.gz
+cd filebeat-5.4.3-linux-x86_64
+```
+这里安装的是bit版，也可以选择rpm版本安装
+
+```
+wget -c https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-x86_64.rpm
+
+```
+
+#### filebeat配置
+```
+vi filebeat.yml
+```
+添加数据源
+
+```
+- input_type: log
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    - /var/wd/feeds_api/logs/feeds_api_info.log
+```
+
+添加字段标示产生日志应用
+
+```
+  fields:
+     app: feeds-api
+```
+
+指定输出
+
+```
+output.logstash:
+  # The Logstash hosts
+  hosts: ["10.213.131.132:10044","10.213.131.131:10044"]
+  worker: 2
+  loadbalance: true
+  index: feeds-log
+```
+
+####启动关闭脚本
+```
+vi startup.sh
+
+#!/bin/bash
+nohup ./filebeat -e -c filebeat.yml -d publish  &
+```
+```
+vi shutdown.sh
+
+#!/bin/bash
+runningPID=`pgrep -f "./filebeat -e -c filebeat.yml -d publish"`
+if [ "$runningPID" ]; then
+      echo "filebeat pid: $runningPID"
+      kill -15 $runningPID
+fi
+sleep 2
+```
+
+
