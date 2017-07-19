@@ -34,6 +34,7 @@ mkdir -p /var/logs/elasticsearch
 vi elasticsearch/config/elasticsearch.yml
 
 cluster.name: elasticstack
+node.name: "10.213.162.77"
 path.data: /var/data/elasticsearch
 path.logs: /var/logs/elasticsearch
 network.host: 0.0.0.0
