@@ -39,12 +39,20 @@ path.data: /var/data/elasticsearch
 path.logs: /var/logs/elasticsearch
 network.host: 0.0.0.0
 http.port: 11200
-transport.tcp.port: 11300
 discovery.zen.ping.unicast.hosts: ["10.213.162.77", "10.213.162.78", "10.213.162.79"]
 discovery.zen.minimum_master_nodes: 3
+transport.tcp.port: 11300
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
+
+```
+vi elasticsearch/config/jvm.options
+
+-Xms32g
+-Xmx32g
+```
+
 #### 创建elasticsearch用户组以及elasticsearch用户
 
 ```
