@@ -266,7 +266,7 @@ vi plugin-config/filebeat.conf
 ```
 input {
     beats {
-        port => "10044"
+        port => "11044"
     }
 }
 # The filter part of this file is commented out to indicate that it is
@@ -336,7 +336,7 @@ vi filebeat.yml
 ```
 output.logstash:
   # The Logstash hosts
-  hosts: ["10.213.131.132:10044","10.213.131.131:10044"]
+  hosts: ["10.213.131.132:11044","10.213.131.131:11044"]
   worker: 2
   loadbalance: true
   index: feeds-log
