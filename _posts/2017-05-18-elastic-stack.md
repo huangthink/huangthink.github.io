@@ -186,7 +186,7 @@ ln -s kibana-5.4.3 kibana
 ```
 vi kibana/config/kibana.yml
 
-server.port: 11201
+server.port: 11601
 server.host: "0.0.0.0"
 elasticsearch.url: "http://10.213.162.78:11200"
 elasticsearch.username: "elastic"
@@ -220,7 +220,7 @@ bin/kibana-plugin install x-pack
 
 #### 验证X-Pack
 
-在浏览器上输入： ```http://10.213.162.77:11201``` ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 ```elastic``` 和 ```changeme```
+在浏览器上输入： ```http://10.213.162.77:11601``` ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 ```elastic``` 和 ```changeme```
 
 ### 安装参考
 
@@ -272,14 +272,14 @@ input {
 # The filter part of this file is commented out to indicate that it is
 # optional.
 filter {
-	#grok根据日志格式配置
+  #grok根据日志格式配置
    grok {
         match => ["message", "%{TIMESTAMP_ISO8601:timestamp} %{WORD:trace_id} \[.*\] %{LOGLEVEL:level}"]
         remove_field => [ "beat","tags"]
      }
   }
 output {
-	 #logstash直接输出到es
+   #logstash直接输出到es
      elasticsearch {
         hosts => ["10.213.131.131:11200","10.213.131.132:11200","10.213.131.134:11200"]
         index => "%{[@metadata][beat]}-%{+YYYY.MM}"
