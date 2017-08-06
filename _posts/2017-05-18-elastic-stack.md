@@ -34,16 +34,25 @@ mkdir -p /var/logs/elasticsearch
 vi elasticsearch/config/elasticsearch.yml
 
 cluster.name: elasticstack
+node.name: "10.213.162.77"
 path.data: /var/data/elasticsearch
 path.logs: /var/logs/elasticsearch
 network.host: 0.0.0.0
 http.port: 11200
-transport.tcp.port: 11300
 discovery.zen.ping.unicast.hosts: ["10.213.162.77", "10.213.162.78", "10.213.162.79"]
 discovery.zen.minimum_master_nodes: 3
+transport.tcp.port: 11300
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
+
+```
+vi elasticsearch/config/jvm.options
+
+-Xms32g
+-Xmx32g
+```
+
 #### 创建elasticsearch用户组以及elasticsearch用户
 
 ```
@@ -177,7 +186,7 @@ ln -s kibana-5.4.3 kibana
 ```
 vi kibana/config/kibana.yml
 
-server.port: 11201
+server.port: 11601
 server.host: "0.0.0.0"
 elasticsearch.url: "http://10.213.162.78:11200"
 elasticsearch.username: "elastic"
@@ -211,7 +220,7 @@ bin/kibana-plugin install x-pack
 
 #### 验证X-Pack
 
-在浏览器上输入： ```http://10.213.162.77:11201``` ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 ```elastic``` 和 ```changeme```
+在浏览器上输入： ```http://10.213.162.77:11601``` ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 ```elastic``` 和 ```changeme```
 
 ### 安装参考
 
@@ -264,8 +273,7 @@ input {
         port => "11044"
     }
 }
-# The filter part of this file is commented out to indicate that it is
-# optional.
+
 filter {
    grok {
         match => ["message", "%{TIMESTAMP_ISO8601:timestamp} \[%{SYSLOGPROG:thread}\] %{LOGLEVEL:level}"]
@@ -277,6 +285,7 @@ filter {
         event.set('type', event.get('app'))"
       }
   }
+  
 output {
   kafka {
    # codec => plain {
@@ -312,8 +321,7 @@ filter {
         match => ["message", "%{TIMESTAMP_ISO8601:timestamp} \[%{SYSLOGPROG:thread}\] %{LOGLEVEL:level}"]
         overwrite => ["timestamp","thread","level"]
         remove_field => [ "beat","tags","program","fields"]
-     }
-  }
+    }
 output{
     elasticsearch{
         hosts=>["10.213.131.131:11200","10.213.131.132:11200","10.213.131.132:11200"]
@@ -379,7 +387,7 @@ vi filebeat.yml
 ```
 output.logstash:
   # The Logstash hosts
-  hosts: ["10.213.131.132:10044","10.213.131.131:10044"]
+  hosts: ["10.213.131.132:11044","10.213.131.131:11044"]
   worker: 2
   loadbalance: true
   index: feeds-log
