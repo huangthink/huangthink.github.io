@@ -230,10 +230,12 @@ bin/kibana-plugin install x-pack
 | x-pack   | https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.4.3.zip          |
 
 ### Logstash安装
+
 Logstash 是一款强大的数据处理工具，它可以实现数据传输，格式处理，格式化输出，还有强大的插件功能，常用于日志处理。
 
 #### logstash版本要求
-| Kafka Client Version | Logstash Version | Plugin Version | Why?                         |
+
+| Kafka Client Version | Logstash Version | Plugin Version | Why         |
 | ------------ | ----------------------- | ----------- | --------------- |
 |   0.8        |   2.0.0 - 2.x.x   |   <3.0.0  | Legacy, 0.8 is still popular      |
 |   0.9        |   2.0.0 - 2.3.x   |   3.x.x   | Works with the old Ruby Event API (event['product']['price'] = 10)      |
@@ -241,6 +243,7 @@ Logstash 是一款强大的数据处理工具，它可以实现数据传输，�
 |   0.10.0.x   |   2.4.x - 5.x.x   |   5.x.x   | Not compatible with the ⇐ 0.9 broker     |
 
 #### logstash下载安装
+
 ```
 cd /var/wd/
 wget -c https://artifacts.elastic.co/downloads/logstash/logstash-5.4.3.tar.gz
@@ -248,7 +251,8 @@ tar -xzvf logstash-5.4.3.tar.gz
 ln -s logstash-5.4.3 logstash
 cd logstash
 ```
-##### 日志采集filebeat配置
+#### 日志采集filebeat配置
+
 ```
 mkdir plugin-config
 vi plugin-config/filebeat.conf
@@ -257,37 +261,84 @@ vi plugin-config/filebeat.conf
 ```
 input {
     beats {
-        port => "10044"
+        port => "11044"
     }
 }
 # The filter part of this file is commented out to indicate that it is
 # optional.
 filter {
-	#grok根据日志格式配置
    grok {
-        match => ["message", "%{TIMESTAMP_ISO8601:timestamp} %{WORD:trace_id} \[.*\] %{LOGLEVEL:level}"]
-        remove_field => [ "beat","tags"]
-     }
+        match => ["message", "%{TIMESTAMP_ISO8601:timestamp} \[%{SYSLOGPROG:thread}\] %{LOGLEVEL:level}"]
+        remove_field => [ "beat","tags","type","program"]
+        add_field => {"app" => "%{[fields][app]}" }
+      }
+   ruby {
+        code => "event.set('esUpdateTime', event.get('@timestamp').time.localtime + 8*60*60)
+        event.set('type', event.get('app'))"
+      }
   }
 output {
-	 #logstash直接输出到es
-     elasticsearch {
-        hosts => ["10.213.131.131:11200","10.213.131.132:11200","10.213.131.134:11200"]
-        index => "%{[@metadata][beat]}-%{+YYYY.MM}"
-        document_type => "%{[@metadata][type]}"
-     }
+  kafka {
+   # codec => plain {
+   #    format => "%{message}"
+   # }
+    codec => json
+    topic_id => "feeds-log"
+    bootstrap_servers => "10.213.131.140:12015,10.213.45.168:12015,10.213.59.97:12015,10.213.59.99:12015"
+    compression_type => "snappy"
+  }
 }
 ```
-##### 启动logstash
+#### 日志转发kafka配置
+
+```
+mkdir plugin-config
+vi plugin-config/kafka.conf
+
+```
+
+```
+input{
+    kafka{
+        codec => "json"
+        group_id => "feeds-log-logstash"
+        topics => ["feeds-log"]
+        bootstrap_servers => "10.213.131.140:12015,10.213.45.168:12015,10.213.59.97:12015,10.213.59.99:12015"
+    }
+}
+
+filter {
+   grok {
+        match => ["message", "%{TIMESTAMP_ISO8601:timestamp} \[%{SYSLOGPROG:thread}\] %{LOGLEVEL:level}"]
+        overwrite => ["timestamp","thread","level"]
+        remove_field => [ "beat","tags","program","fields"]
+     }
+  }
+output{
+    elasticsearch{
+        hosts=>["10.213.131.131:11200","10.213.131.132:11200","10.213.131.132:11200"]
+        index => "feeds-log-%{+YYYYMM}"
+        document_type => "%{type}"
+        #flush_size=>20000
+        #idle_flush_time=>10
+        #template_overwrite=>true
+    }
+}
+```
+
+#### 启动logstash
+
 控台启动，观察错误日志，没问题在后台启动
 ```
 bin/logstash -f plugin-config/filebeat.conf --config.reload.automatic
 ```
 
 ### Filebeat安装
+
 Beats 平台是 Elastic.co 从 packetbeat 发展出来的数据收集器系统。beat 收集器可以直接写入 Elasticsearch，也可以传输给 Logstash。其中抽象出来的 libbeat，提供了统一的数据发送方法，输入配置解析，日志记录框架等功能。也就是说，所有的 beat 工具，在配置上，除了 input 以外，在output、filter、shipper、logging、run-options 上的配置规则都是完全一致的 ，filebeat是beat中的一员。
 
 #### filebeat下载
+
 ```
 cd /var/wd/
 wget -c https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-linux-x86_64.tar.gz
@@ -302,6 +353,7 @@ wget -c https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-x86
 ```
 
 #### filebeat配置
+
 ```
 vi filebeat.yml
 ```
@@ -333,7 +385,8 @@ output.logstash:
   index: feeds-log
 ```
 
-####启动关闭脚本
+#### 启动关闭脚本
+
 ```
 vi startup.sh
 
