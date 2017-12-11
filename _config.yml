@@ -1,9 +1,9 @@
 # Basic
-title: GEEK REPUBLIC
+title: FELICS
 subtitle: 万物之中,希望至美,至美之物,永不凋零
 welcome_message: 
 description: Life@Shanghai Work@WANDA
-creator: <a href="http://www.jikexingqiu.com">@极客星球</a>
+creator: <a href="https://geekr.me">@GEEKR</a>
 
 url: "http://felics.github.io"
 
@@ -17,12 +17,12 @@ cover_color: gray-lightest
 
 # The blog button should not be removed.
 blog_button:
-    title: 博客
+    title: BLOG
     description: 访问博客
 
 # Navigation buttons in the front page.
 nav:
-    - {title: 极客星球, description: 探索你不知道的，分享你知道的, url: 'http://www.jikexingqiu.com'}
+    - {title: GEEKR, description: 人工智能聚合阅读, url: 'https://geekr.me'}
     # - {title: Another Button, description: A button, url: 'http://example.com'}
 
 # Pagination
