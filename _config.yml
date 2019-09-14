@@ -1,11 +1,11 @@
 # Basic
-title: FELICS
-subtitle: 万物之中,希望至美,至美之物,永不凋零
-welcome_message: 
-description: Life@Shanghai Work@Meituan
-creator: <a href="https://geekr.me">@GEEKR</a>
+title: Trendy&#39;s Den
+subtitle: 万物之中, 希望至美
+welcome_message: Life@Shanghai Work@Meituan
+description: 嗨，我是黄智强 (@trendystar)，一名程序员。
+creator: <a href="https://geekr.me">@TRENDY</a>
 
-url: "http://felics.geekr.me"
+url: "https://geekr.me"
 
 permalink: /:title/
 
@@ -17,12 +17,12 @@ cover_color: gray-lightest
 
 # The blog button should not be removed.
 blog_button:
-    title: BLOG
+    title: 博客
     description: 访问博客
 
 # Navigation buttons in the front page.
 nav:
-    - {title: GEEKR, description: 极客星球, url: 'https://geekr.me'}
+    # - {title: GEEKR, description: 极客星球, url: 'https://geekr.me'}
     # - {title: Another Button, description: A button, url: 'http://example.com'}
 
 # Pagination
