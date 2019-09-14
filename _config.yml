@@ -1,5 +1,5 @@
 # Basic
-title: Trendy&#39;s Den
+title: Trendy's Den
 subtitle: 万物之中, 希望至美
 welcome_message: Life@Shanghai Work@Meituan
 description: 嗨，我是黄智强 (@trendystar)，一名程序员。
@@ -22,7 +22,7 @@ blog_button:
 
 # Navigation buttons in the front page.
 nav:
-    # - {title: GEEKR, description: 极客星球, url: 'https://geekr.me'}
+    - {title: 简历, description: 我的简历, url: '#'}
     # - {title: Another Button, description: A button, url: 'http://example.com'}
 
 # Pagination
