@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Lucene学习笔记</title>
+  <meta name="description" content="  概要：      全文检索的原理和基本概念（铺垫）    Lucene简介，索引文档和检索文档的过程（主要）    Lucene 相似度评分算法（拓展）  ">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Lucene学习笔记">
+  <meta name="twitter:description" content="  概要：      全文检索的原理和基本概念（铺垫）    Lucene简介，索引文档和检索文档的过程（主要）    Lucene 相似度评分算法（拓展）  ">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Lucene学习笔记">
+  <meta property="og:description" content="  概要：      全文检索的原理和基本概念（铺垫）    Lucene简介，索引文档和检索文档的过程（主要）    Lucene 相似度评分算法（拓展）  ">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/luence-notes/">
+  <link rel="alternate" type="application/rss+xml" title="Trendy Man" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Trendy Man 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Trendy Man logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Trendy Man" class="blog-button">Trendy Man</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">a backend developer</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">万物之中 希望至美 至美之物 永不凋零</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Life@Shanghai Work@Meituan</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/princecharming" title="@princecharming 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/trendystar" title="@trendystar 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+  <!-- Twitter -->
+  <li class="navigation__item">
+    <a href="http://twitter.com/huangthink" title="@huangthink" target="_blank">
+      <i class='social fa fa-twitter'></i>
+      <span class="label">Twitter</span>
+    </a>
+  </li>
+  
+
+  
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:huangthink@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-gray-lightest"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2016-06-06 12:18:02 +0800" itemprop="datePublished" class="post-meta__date date">2016-06-06</time> &#8226; <span class="post-meta__tags tags">能工巧匠</span>
+    </div>
+    <h1 class="post-title">Lucene学习笔记</h1>
+  </header>
+
+  <section class="post">
+    <blockquote>
+  <p>概要：</p>
+
+  <ol>
+    <li>全文检索的原理和基本概念（铺垫）</li>
+    <li>Lucene简介，索引文档和检索文档的过程（主要）</li>
+    <li>Lucene 相似度评分算法（拓展）</li>
+  </ol>
+</blockquote>
+
+<h1 id="全文检索原理铺垫">全文检索原理（铺垫）</h1>
+
+<h2 id="数据分类">数据分类</h2>
+
+<p>生活中的数据总体分为三种：</p>
+
+<ul>
+  <li>结构化数据，固定格式和长度，如数据库数据，元数据等</li>
+  <li>非结构化数据，无固定格式和长度，如邮件，word文档，商品描述信息，非结构化数据也称为为全文数据</li>
+  <li>半结构化数据，如XML，HTML等，当然根据需要按结构化数据来处理，也可抽取出纯文本按非结构化数据来处理</li>
+</ul>
+
+<h2 id="搜索分类">搜索分类</h2>
+
+<p>按照数据的分类，搜索也分为两种：</p>
+
+<ul>
+  <li>对结构化数据的搜索，如对数据库的搜索，用SQL语句</li>
+  <li>对非结构化数据的搜索，如用Google和百度搜索</li>
+</ul>
+
+<h2 id="对非结构化数据全文数据搜索方法">对非结构化数据（全文数据）搜索方法</h2>
+
+<ul>
+  <li>顺序扫描法(Serial Scanning)</li>
+</ul>
+
+<p>从头到尾的扫描，比如windows的搜索文件，Linux下的grep命令，这种方法比较原始，但对于小数据量的文件，这种方法还是最直接，最方便的。但是对于大量的文件，这种方法就很慢了。</p>
+
+<ul>
+  <li>全文检索（Full-text Search）</li>
+</ul>
+
+<p>有人可能会说，对非结构化数据顺序扫描很慢，对结构化数据的搜索却相对较快（由于结构化数据有一定的结构可以采取一定的搜索算法加快速度），那么把我们的非结构化数据想办法弄得有一定结构不就行了吗？</p>
+
+<p>这就是全文检索的基本思路：也即将非结构化数据中的一部分信息提取出来，重新组织，使其变得有一定结构，然后对此有一定结构的数据进行搜索，从而达到搜索相对较快的目的。</p>
+
+<p>这部分从非结构化数据中提取出的然后重新组织的信息，我们称之<strong>索引</strong></p>
+
+<p>直观的例子就是字典，可以按照偏旁部首和读音去找到对应的页数范围</p>
+
+<p><strong>这种先建立索引，再对索引进行搜索的过程就叫全文检索(Full-text Search)</strong></p>
+
+<h2 id="全文检索的过程">全文检索的过程</h2>
+
+<p><img src="http://ww3.sinaimg.cn/large/0060lm7Tly1fmpj7mitjgj30gs0et401.jpg" alt="image" /></p>
+
+<p>提出三个问题：</p>
+
+<ul>
+  <li>索引里面究竟存些什么？(Index)</li>
+  <li>如何创建索引？(Indexing)</li>
+  <li>如何对索引进行搜索？(Search)</li>
+</ul>
+
+<h3 id="索引里面究竟存些什么index">索引里面究竟存些什么？(Index)</h3>
+
+<p>非结构化数据中所存储的信息：文件-&gt;字符串</p>
+
+<p>而我们想搜索的是：字符串-&gt;文件</p>
+
+<p>如果索引总能够保存从字符串到文件的映射，则会大大提高搜索速度。保存这种信息的索引称为<strong>反向索引</strong>或者<strong>倒排索引</strong></p>
+
+<p>反向索引报错信息一般如下：
+假设有100个文档，id为1-100，我们得到如下的结构</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1fmpj86xoizj30gm04vq5w.jpg" alt="image" /></p>
+
+<p>左边报错的一系列字符串，称为<strong>词典</strong>
+右边的文档链表称为<strong>倒排表</strong></p>
+
+<p>比如说，我们要寻找包含字符”lucene”而且包含”solr”的文档，只需要下面几步：</p>
+
+<ol>
+  <li>取出包含字符串“lucene”的文档链表。</li>
+  <li>取出包含字符串“solr”的文档链表。</li>
+  <li>通过合并链表，找出既包含“lucene”又包含“solr”的文件。</li>
+</ol>
+
+<p><img src="http://ww3.sinaimg.cn/large/0060lm7Tly1fmpj8jdbyrj30gu01qab2.jpg" alt="image" /></p>
+
+<p>索引反映出了全文搜索优势：一次索引，多次使用。</p>
+
+<h3 id="如何创建索引indexing">如何创建索引？(Indexing)</h3>
+
+<p>通过一个例子讲解</p>
+
+<p><strong>第一步，准备一些要索引的文档（Document）</strong></p>
+
+<blockquote>
+  <p>文件一：Students should be allowed to go out with their friends, but not allowed to drink beer.</p>
+
+  <p>文件二：My friend Jerry went to school to see his students but found them drunk which is not allowed.</p>
+</blockquote>
+
+<p><strong>第二步，将原文档传给分词组件（Tokenizer）</strong></p>
+
+<p>分词组件做的几件事：</p>
+
+<ol>
+  <li>将文档分成一个一个单独的单词</li>
+  <li>去除标点符号</li>
+  <li>去除停词(Stop word)：语言中最普通的一些单词，比如：the”,“a”，“this” 由于没有特别的意义，因而大多数情况下不能成为搜索的关键词</li>
+</ol>
+
+<p>经过分词(Tokenizer)后得到的结果称为词元(Token)：
+“Students”，“allowed”，“go”，“their”，“friends”，“allowed”，“drink”，“beer”，“My”，“friend”，“Jerry”，“went”，“school”，“see”，“his”，“students”，“found”，“them”，“drunk”，“allowed”。</p>
+
+<p><strong>第三步，将词元（Token）传给语言处理组件（Linguistic Processor）</strong></p>
+
+<p>对于英语，语言处理组件做的几件事：</p>
+
+<ol>
+  <li>变为小写(Lowercase)。</li>
+  <li>将单词缩减为词根形式，如“cars”到“car”等。这种操作称为：stemming。</li>
+  <li>将单词转变为词根形式，如“drove”到“drive”等。这种操作称为：lemmatization。</li>
+</ol>
+
+<p>语言处理组件(linguistic processor)的结果称为词(Term)</p>
+
+<p>在我们的例子中，经过语言处理，得到的词(Term)如下：</p>
+
+<p>“student”，“allow”，“go”，“their”，“friend”，“allow”，“drink”，“beer”，“my”，“friend”，“jerry”，“go”，“school”，“see”，“his”，“student”，“find”，“them”，“drink”，“allow”。</p>
+
+<p>也正是因为有语言处理的步骤，搜索“drive”，“driving”，“drove”，“driven”也能够被搜到,因为在我们的索引中，“driving”，“drove”，“driven”都会经过语言处理而变成“drive”，</p>
+
+<p><strong>第四步，将得到的词(Term)传给索引组件(Indexer)</strong></p>
+
+<ol>
+  <li>利用得到的词(Term)创建一个字典。</li>
+</ol>
+
+<p><img src="http://ww3.sinaimg.cn/large/0060lm7Tly1fmpj93rlavj30ca0h8aa5.jpg" alt="image" /></p>
+
+<p>2.对字典按字母顺序进行排序</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/0060lm7Tly1fmpj9em90yj30ca0h3aa5.jpg" alt="image" /></p>
+
+<ol>
+  <li>合并相同的词(Term)成为文档倒排(Posting List)链表。</li>
+</ol>
+
+<p><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1fmpj9pqeklj30gn0evdoe.jpg" alt="image" /></p>
+
+<p>在此表中，有几个定义：</p>
+
+<ul>
+  <li>Document Frequency 即文档频次，表示总共有多少文件包含此词(Term)。</li>
+  <li>Frequency 即词频率，表示此文件中包含了几个此词(Term)</li>
+</ul>
+
+<h3 id="如何对索引进行搜索search">如何对索引进行搜索？(Search)</h3>
+
+<p><strong>第一步：用户输入查询语句</strong></p>
+
+<p><strong>第二步：搜索应用程序对用户输入查询语句进行词法分析，语法分析，及语言处理</strong>
+步骤和索引过程中的语言处理几乎相同</p>
+
+<p><strong>第三步：搜索索引，得到符合语法树的文档</strong></p>
+
+<p><strong>第四步：根据得到的文档和查询语句的相关性，对结果进行排序。</strong></p>
+
+<h2 id="全文检索原理总结">全文检索原理总结</h2>
+
+<p><img src="http://ww1.sinaimg.cn/large/0060lm7Tly1fmpja86blsj30gp0bjgr2.jpg" alt="image" /></p>
+
+<p>刚才说的信息检索技术(Information retrieval)中的基本理论，Lucene就是对这种基本理论的一种基本的的实践。</p>
+
+<h1 id="lucene简介主要内容">Lucene简介（主要内容）</h1>
+
+<h2 id="概述">概述</h2>
+
+<p>官网介绍：</p>
+
+<blockquote>
+  <p>Apache LuceneTM is a high-performance, full-featured text search engine library written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform.</p>
+</blockquote>
+
+<p>Lucene是一个高效的，可扩展的，基于Java的全文检索库</p>
+
+<p>要注意的是它不是一个完整的搜索应用程序，而是为你的应用程序提供索引和搜索功能，</p>
+
+<p>由于是它不是一个完整的搜索应用程序，所以有一些基于Lucene的开源搜索引擎产生，比如Elasticsearch和solr</p>
+
+<h2 id="索引结构">索引结构</h2>
+
+<p><img src="http://ww4.sinaimg.cn/large/0060lm7Tly1fmpjapbz19j30wt0l10v0.jpg" alt="image" /></p>
+
+<ul>
+  <li>index
+同一文件夹中的所有的文件构成一个Lucene 索引</li>
+  <li>Segment
+一个索引可以包含多个段，段与段之间是独立的，添加新文档可以生成新的段，不同的段可以合并</li>
+  <li>Document</li>
+  <li>文档是我们建索引的基本单位，不同的文档是保存在不同的段中的，一个段可以包含多 个文档</li>
+  <li>Field
+一篇文档包含不同类型的信息，可以分开索引，比如标题，时间，正文，作者等</li>
+  <li>Term
+词是索引的最小单位，是经过词法分析和语言处理后的字符串</li>
+</ul>
+
+<p>lucene 的索引结构中，即保存了正向信息，也保存了反向信息
+正向：索引(Index) –&gt; 段(segment) –&gt; 文档
+(Document) –&gt; 域(Field) –&gt; 词(Term)
+反向：
+词(Term) –&gt; 文档(Document</p>
+
+<p>组件：
+<img src="http://ww3.sinaimg.cn/large/0060lm7Tly1fmpjb39imhj30ff0a3dil.jpg" alt="image" /></p>
+
+<ul>
+  <li>被索引的文档用Document对象表示。</li>
+  <li>IndexWriter通过函数addDocument将文档添加到索引中，实现创建索引的过程</li>
+  <li>Lucene的索引是应用反向索引。</li>
+  <li>当用户有请求时，Query代表用户的查询语句。</li>
+  <li>IndexSearcher通过函数search搜索Lucene Index。</li>
+  <li>IndexSearcher计算term weight和score并且将结果返回给用户。</li>
+  <li>返回给用户的文档集合用TopDocsCollector表示。</li>
+</ul>
+
+<p>此图简单介绍全文检索的流程对应的Lucene实现的包结构：</p>
+
+<p>再详细到对Lucene API 的调用实现索引和搜索过程</p>
+
+<h2 id="索引过程">索引过程</h2>
+
+<h3 id="核心类indexwriter">核心类：IndexWriter</h3>
+
+<p>IndexWriter 是 Lucene 用来创建索引的一个核心的类，他的作用是把 Document 对象加到索引中。</p>
+
+<p>lucene6.5中构造方法：</p>
+
+<figure class="highlight plain"><table><tbody><tr><td class="gutter" style=""><pre><div class="line">1</div></pre></td><td class="code" style="width: 679px;"><pre style="width: 679px;"><div class="line">public IndexWriter(Directory d, IndexWriterConfig conf)</div></pre></td></tr></tbody></table></figure>
+
+<ul>
+  <li>Directory</li>
+</ul>
+
+<p>这个类代表了 Lucene 的索引的存储的位置，这是一个抽象类，它目前有两个实现，第一个是 FSDirectory，它表示一个存储在文件系统中的索引的位置。第二个是 RAMDirectory，它表示一个存储在内存当中的索引的位置。</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1fmpjblem3nj30gm067aae.jpg" alt="image" /></p>
+
+<ul>
+  <li>IndexWriterConfig 是一个配置类，属性如下</li>
+</ul>
+
+<p><img src="http://ww1.sinaimg.cn/large/0060lm7Tly1fmpjbvqdllj30fx0d0gm6.jpg" alt="image" /></p>
+
+<p>IndexWriterConfig主要包含了下面的信息：</p>
+
+<ul>
+  <li>
+    <p>OpenMode 打开模式（CREATE-清空重建，APPEND-总是追加，CREATE_OR_APPEND-创建或追加）</p>
+  </li>
+  <li>
+    <p>Analyzer
+分析器  在一个文档被索引之前，首先需要对文档内容进行分词处理</p>
+  </li>
+  <li>
+    <p>Similarity 影响打分的标准化因子(normalization
+factor)部分，对文档的打分分两个部分，一部分是索引阶段计算的，与查询语句无关，一部分是搜索阶段计算的，与查询语句相关</p>
+  </li>
+  <li>
+    <p>Codec 编解码器 用来写入段的</p>
+  </li>
+  <li>
+    <p>MergePolicy 段合并策略</p>
+  </li>
+</ul>
+
+<h3 id="示例代码">示例代码</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Index {
+    public static void main(String[] args) throws IOException {
+        //写索引类
+        IndexWriter writer;
+        //索引目录
+        String indexDir = "C:\\lucene\\index";
+        //储存方式
+        Directory directory = FSDirectory.open(Paths.get(indexDir));
+        //写索引类配置
+        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+        writer = new IndexWriter(directory, config);
+        //生成Document对象，Document对象就是对文档各个属性的封装
+        String dataDir = "C:\\lucene\\data\\123.txt";//文件，里边要有.txt文件
+        File file = new File(dataDir);
+        Document doc = new Document();
+        doc.add(new Field("filename", file.getName(), TextField.TYPE_STORED));
+        doc.add(new Field("contents", new FileReader(file), TextField.TYPE_NOT_STORED));
+        //写入索引，将生成的Document（目录）对象写入到索引中
+        writer.addDocument(doc);
+        //关闭
+        writer.close();
+    }
+}
+</code></pre></div></div>
+
+<h2 id="搜索过程">搜索过程</h2>
+
+<h3 id="核心类-indexsearcher">核心类 IndexSearcher</h3>
+
+<p>IndexSearcher 是用来在建立好的索引上进行搜索的。它只能以只读的方式打开一个索引，所以可以有多个 IndexSearcher 的实例在一个索引上进行操作。</p>
+
+<p>步骤：</p>
+
+<ul>
+  <li>IndexReader将磁盘上的索引信息读入到内存，INDEX_DIR就是索引文件存放的位置。</li>
+  <li>创建IndexSearcher准备进行搜索。</li>
+  <li>创建Analyer用来对查询语句进行词法分析和语言处理。</li>
+  <li>创建QueryParser用来对查询语句进行语法分析。</li>
+  <li>QueryParser调用parser进行语法分析，形成查询语法树，放到Query中。</li>
+  <li>IndexSearcher调用search对查询语法树Query进行搜索，得到结果TopDocs</li>
+</ul>
+
+<p>示例代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Searcher {
+    //这个方法是搜索索引的方法，传入索引路径和查询表达式
+    public static void search(String indexDir,String query) throws IOException, ParseException {
+        //打开索引目录
+        Directory dir= FSDirectory.open(Paths.get(indexDir));
+        // 创建搜索的Query
+        IndexSearcher searcher=new IndexSearcher(DirectoryReader.open(dir));
+        // 使用标准的分词器
+        Analyzer analyzer = new StandardAnalyzer();
+        // 在content中搜索，创建parser确定要搜索的内容，其中，第2个参数为搜索的域
+        QueryParser parser=new QueryParser("contents",analyzer);
+        // 创建Query表示搜索域为content中，包含搜索内容为query1的文档
+        Query query1=parser.parse(query);
+        long start=System.currentTimeMillis();
+        // 开始搜索
+        TopDocs hits=searcher.search(query1,11);
+        long end=System.currentTimeMillis();
+        System.out.println(hits.totalHits);
+        System.out.println(end-start);//计算搜搜时间等
+        //获取搜索的地址等
+        for(ScoreDoc scoreDoc:hits.scoreDocs){
+            Document doc=searcher.doc(scoreDoc.doc);
+            System.out.println(doc.get("fullpath"));//地址，完整的
+        }
+    }
+    public static void main(String[] args) throws IOException, ParseException {
+        String indexDir="C:\\lucene\\index";//索引，index时建立的
+        String query="food";//搜索的word
+        search(indexDir, query);
+    }
+}
+</code></pre></div></div>
+<h2 id="程序包和索引与搜索过程的对应关系">程序包和索引与搜索过程的对应关系</h2>
+
+<p><img src="http://ww2.sinaimg.cn/large/0060lm7Tly1fmpjce9bujj30f709wq7k.jpg" alt="image" /></p>
+
+<ul>
+  <li>Lucene的analysis模块主要负责词法分析及语言处理而形成Term。</li>
+  <li>Lucene的index模块主要负责索引的创建，里面有IndexWriter。</li>
+  <li>Lucene的store模块主要负责索引的读写。</li>
+  <li>Lucene的QueryParser主要负责语法分析。</li>
+  <li>Lucene的search模块主要负责对索引的搜索。</li>
+  <li>Lucene的similarity模块主要负责对相关性打分的实现。</li>
+</ul>
+
+<h1 id="第三部分lucene-相似度评分算法similarity">第三部分：Lucene 相似度评分算法（similarity）</h1>
+
+<ul>
+  <li>
+    <p>TF/IDF (词频/逆文档频率)算法，ES5.0之前，TF/IDF是默认的评分算法,TF/IDF源于<strong>向量空间模型(Vector Space Model)</strong></p>
+  </li>
+  <li>
+    <p>BM25算法，ES5.0及之后（2017-05-04发布的5.4版本），BM25是默认的评分算法,BM25源于<strong>概率相关模型(probabilistic relevance model)</strong></p>
+  </li>
+</ul>
+
+<p>虽然听着好像差别巨大，但，两者都使用 词频, 逆文档频率 这些概念，且公式也很相似。<strong>其区别在于如何处理出现频繁的词</strong></p>
+
+<h2 id="tfidf词频逆文档频率算法">TF/IDF(词频/逆文档频率)算法</h2>
+
+<h3 id="铺垫向量空间模型-vector-space-model">铺垫：向量空间模型-Vector Space Model</h3>
+
+<p>问题：给定文档d 和 查询q，相似度如何计算呢？</p>
+
+<p>定义V(q) 和 V(d) 是 d和q 分词完成后，利用每个词出现次数所形成的向量</p>
+
+<p>相似度就等于文档d 和 查询q 的 加权查询向量V(q)和V(d)的 <strong>余弦相似度</strong></p>
+
+<h2 id="计算文档得分需要考虑以下因子">计算文档得分需要考虑以下因子</h2>
+
+<ul>
+  <li>
+    <p>文档权重（document boost）：<strong>索引期</strong>赋予某个文档的权重值</p>
+  </li>
+  <li>
+    <p>字段权重（field boost）:<strong>查询期</strong>赋予某个字段的权重值</p>
+  </li>
+  <li>
+    <p>词频(trem frequency)：一个基于词项的因子，用来表示一个词项在某个文档中出现多少次，<strong>词频越高，文档得分越高</strong> <em>比如：查询关键词是A，文档1和文档1都匹配上了，但是文档1中出现了2次A,文档2中出现了1次A,那么在这个项目中，文档1分数更高</em></p>
+  </li>
+  <li>
+    <p>逆文档频率(inverse document frequency):一个基于词项的因子,用来告诉评分公式该词项有多么<strong>罕见</strong>，逆文档频率越低，词项越罕见，评分公式利用该因子为包含罕见词项的文档加权
+<em>比如：查询关键词是A和B,如果文档1命中了A,文档2命中了B,但是在整个文档范围内，A出现的次数比B少，那么在这个项目中，文档1分数更高</em></p>
+  </li>
+  <li>
+    <p>协调因子（coord）：基于文档中词项命中个数的协调因子，<strong>一个文档中命中了查询中的词项越多，得分越高</strong>
+<em>比如：查询关键词被分词为A和B,如果文档1命中了A和B,文档2命中了A,那么在这个项目上，文档1的分数更高</em></p>
+  </li>
+  <li>
+    <p>长度范数(length norm):每个字段的基于词项个数的归一化因子，一个字段包含的词项越多，改因子的权重越低，<em>*这意味着lucene评分公式更”喜欢”包含更少词项的字段</em>
+<em>比如：查询关键词是A,文档1和2都匹配上了A,但是文档1内容长度比文档1短，那么在这个项目中，文档1分数更高</em></p>
+  </li>
+  <li>
+    <p>查询范数（query norm）：一个基于查询的归一化因子，它等于<strong>查询中词项的权重平方和</strong>，<strong>查询范数使得不同查询的得分能相互比较，尽管这种比较通常是困难且不可行的</strong></p>
+  </li>
+</ul>
+
+<h2 id="tfidf评分公式">TF/IDF评分公式</h2>
+
+<p><strong>Lucene理论评分公式</strong>
+注意，你并不需要深入理解这个公式的来龙去脉，了解它的工作原理非常重要</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/0060lm7Tly1fmpjcs6s63j30mp039zkm.jpg" alt="image" /></p>
+
+<p>上面的公式理论形式糅合了布尔检索模型和向量空间检索模型，我们可以不讨论这个理论评分公式，直接跳到lucene实际评分公式
+<strong>Lucene实际评分公式</strong>
+现在让我来看看Lucene实际评分公式：</p>
+
+<p><img src="http://ww4.sinaimg.cn/large/0060lm7Tly1fmpjd34tfyj30mu02o0t3.jpg" alt="image" /></p>
+
+<p>解释：这是一个关于<strong>查询q</strong>和<strong>文档d</strong>的函数，有两个因子coord和queryNorm并不直接依赖查询词项，而是与查询词项的一个<strong>求和公式</strong>相乘，<strong>求和公式</strong>中的每个加数由以下因子连乘所得：词频 逆文档频率 词项权重 长度范数</p>
+
+<p>由这个公式我们可以导出一些规则：</p>
+
+<ul>
+  <li>越多罕见的词项被匹配上，文档分数越高</li>
+  <li>文档字段越短，文档分数越高</li>
+  <li>权重越高（无论是索引期还查询期赋予的权重值），文档得分越高</li>
+</ul>
+
+<h2 id="bm25算法">BM25算法</h2>
+
+<p>BM 是 Best Matching (最佳匹配) 的缩写，它被认为是 当今最先进的排序函数</p>
+
+<p>BM25源于 概率相关模型(probabilistic relevance mode), BM25和TF/IDF实际的打分函数有非常多的相似之处</p>
+
+<p>BM25 同样使用词频、逆向文档频率以及字段长归一化，但是每个因子的定义都有细微区别。与其详细解释 BM25 公式，不如将关注点放在 BM25 所能带来的实际好处上</p>
+
+<p>接下来对比下BM25与TFIDF的区别：</p>
+
+<p>对于词频，BM25 有一个上限，文档里出现 5 到 10 次的词会比那些只出现一两次的对相关度有着显著影响。，文档中出现 20 次的词几乎与那些出现上千次的词有着相同的影响。</p>
+
+<h2 id="搜索流程映射到tfidf算法公式">搜索流程映射到TF/IDF算法公式</h2>
+
+<p><img src="http://ww4.sinaimg.cn/large/0060lm7Tly1fmpjddf3kyj30u90iidhk.jpg" alt="image" /></p>
+
+  </section>
+</article>
+
+<!--<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/elastic-stack/" title="link to Elastic Stack安装教程">Elastic Stack安装教程</a></h2>
+       <p class="excerpt">环境准备  CentOS7.1  JDK1.8  elasticsearch-5.4.3JDK安装配置下载地址：http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gzelasticsearch安装配置下载解压使用命令从官网下载最新版本的Elasticsearch压缩包cd /var/wdwget -N https://artifacts.elastic.co/downloads/ela...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-05-18 11:30:28 +0800" class="post-list__meta--date date">2017-05-18</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/elastic-stack/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/memory-analyzer-tool/" title="link to 使用MAT(Memory Analyzer Tool)分析内存泄漏">使用MAT(Memory Analyzer Tool)分析内存泄漏</a></h2>
+       <p class="excerpt">在工作中，有时会遇到OutOfMemoryError，我们知道遇到Error一般表明程序存在着严重问题，可能是灾难性的。所以找出是什么原因造成OutOfMemoryError非常重要。Memory Analyzer tool(MAT)来化解我们遇到的难题。从可用内存和请求数量的变化情况判断是突发性的内存泄露还是不断积累的结果换句话说，首先定位内存泄露的性质：突发内存泄露：  表现：可用内存直线下降，短时间内消耗殆尽。  原因：定时任务执行、用户集中访问等，频繁调用有内存泄露的代码块。  排...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2015-07-08 18:21:16 +0800" class="post-list__meta--date date">2015-07-08</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/memory-analyzer-tool/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/luence-notes/";
+        this.page.identifier = "/luence-notes/";
+    };
+
+    var disqus_shortname = 'felics';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+-->
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">&copy; 2021  Trendy Man.  本博客由<a href="https://jekyllrb.com"> Jekyll </a>生成 使用<a href="https://github.com/onevcat/vno-jekyll"> Vno-Jekyll </a>作为主题</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

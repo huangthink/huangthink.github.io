@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>用Octopress在Github搭建个人博客</title>
+  <meta name="description" content="一、安装Octopress运行的必要软件">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="用Octopress在Github搭建个人博客">
+  <meta name="twitter:description" content="一、安装Octopress运行的必要软件">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="用Octopress在Github搭建个人博客">
+  <meta property="og:description" content="一、安装Octopress运行的必要软件">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/github-octopress/">
+  <link rel="alternate" type="application/rss+xml" title="Trendy Man" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Trendy Man 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Trendy Man logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Trendy Man" class="blog-button">Trendy Man</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">a backend developer</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">万物之中 希望至美 至美之物 永不凋零</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Life@Shanghai Work@Meituan</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/princecharming" title="@princecharming 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/trendystar" title="@trendystar 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+  <!-- Twitter -->
+  <li class="navigation__item">
+    <a href="http://twitter.com/huangthink" title="@huangthink" target="_blank">
+      <i class='social fa fa-twitter'></i>
+      <span class="label">Twitter</span>
+    </a>
+  </li>
+  
+
+  
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:huangthink@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-gray-lightest"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2014-06-06 20:38:02 +0800" itemprop="datePublished" class="post-meta__date date">2014-06-06</time> &#8226; <span class="post-meta__tags tags">能工巧匠</span>
+    </div>
+    <h1 class="post-title">用Octopress在Github搭建个人博客</h1>
+  </header>
+
+  <section class="post">
+    <p>一、安装Octopress运行的必要软件</p>
+
+<!-- more -->
+
+<p>1.Octopress官网及软件下载：</p>
+
+<ul>
+  <li>
+    <p>官方首页：<a href="http://octopress.org" title="http://octopress.org">http://octopress.org</a></p>
+  </li>
+  <li>
+    <p>这里是RubyInstaller<a href="http://pan.baidu.com/s/1eQotA0a">下载地址</a> （码：aurm）。</p>
+  </li>
+  <li>
+    <p>这里是DevKit<a href="http://pan.baidu.com/s/1hq1gIUS">下载地址</a> （码：vkd5）。</p>
+  </li>
+</ul>
+
+<p>2.安装RubyInstaller</p>
+
+<p>3.安装DevKit</p>
+
+<p>4.启动Ruby命令框，用CD的命令进入你存放DevKit的目录中，执行以下命令继续安装</p>
+
+<p><code class="highlighter-rouge">ruby dk.rb init</code></p>
+
+<p><code class="highlighter-rouge">ruby dk.rb install</code></p>
+
+<p>二、在本地安装Octopress博客系统</p>
+
+<p>1.要安装Octopress，就得先改变一个软件更新的源，因为默认的官方下载源已经被Q了。执行以下命令。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem sources <span class="nt">-a</span> http://ruby.taobao.org/
+gem sources <span class="nt">-r</span> http://rubygems.org/
+gem sources –l
+</code></pre></div></div>
+
+<p>2.然后执行：vi Gemfile 编辑配置文件，你也可以直接使用文本编辑器打开Gemfile，将第一行的source改成国内淘宝的。</p>
+
+<p>3.依次进入你存放博客的目录中，安装bundler。</p>
+
+<p><code class="highlighter-rouge">gem install bundler</code></p>
+
+<p><code class="highlighter-rouge">bundle install</code></p>
+
+<p>4.再安装Octopress默认的主题。</p>
+
+<p><code class="highlighter-rouge">rake install</code></p>
+
+<p>5.最后是生成和预览博客。</p>
+
+<p><code class="highlighter-rouge">rake generate</code>
+<code class="highlighter-rouge">rake preview</code></p>
+
+<p>6.用的浏览器打开：localhost:4000，就可以看到Octopress博客效果了。</p>
+
+<p>三、更改电脑环境变量让Octopress支持中文</p>
+
+<p>1.我们需要改变一下我们计算机的环境变量，计算机–属性–高级系统设置–环境变量。</p>
+
+<p>2.新增 LANG 和 LC_ALL ，值都是 zh_CN.UTF-8。</p>
+
+<p>四、提交Octopress博客到Github免费空间</p>
+
+<p>1.先进入你的Github的本地项目中。</p>
+
+<p>2.连接Github服务器，填写你的Responsibility Url。</p>
+
+<p>3.然后再执行生成和提交命令。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">rake setup_github_pages
+rake generate
+rake deploy</code></pre></figure>
+
+<p>4.完成后，打开你的Github的二级域名后就可以看到刚刚提交的Octopress博客了。</p>
+
+<p>5.还可以直接使用Git来提交你的Octopress博客</p>
+
+<p>6.执行Octopress生成后，博客所有文件都存在一个Public的文件夹。你只要将这个Public中的文件复制或者直接上传到你的Github的空间也能实现浏览的效果。</p>
+
+<p>五、Octopress博客发布文章和新建页面</p>
+
+<p>1.发布一个文章前，先生成一个MD的文件，执行。</p>
+
+<p><code class="highlighter-rouge">rake new_post["hello world"]</code> 它会在项目/source/_posts/中生成一个MD文件，类似2014-06-01-hello-world.markdown这样的。</p>
+
+<p>2.如果想要新建一个页面，则可以执行。</p>
+
+<p><code class="highlighter-rouge">rake new_page["about"]</code> Octopress需要使用markdown语法，并不是常用的HtmL，学习markdown：http://wowubuntu.com/markdown/</p>
+
+<p>3.文章编辑完成后，就是生成和发布了。</p>
+
+<p><code class="highlighter-rouge">rake generate</code>
+<code class="highlighter-rouge">rake deploy</code></p>
+
+<p>4.本地预览可以用以下命令。</p>
+
+<p><code class="highlighter-rouge">rake preview</code></p>
+
+<p>5.退出预览是：Ctrl+C</p>
+
+  </section>
+</article>
+
+<!--<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/zookeeper-solr-tomcat/" title="link to Zookeeper、Solr和Tomcat安装配置实践">Zookeeper、Solr和Tomcat安装配置实践</a></h2>
+       <p class="excerpt">三台服务器:  192.168.19.210(myid=210) master  192.168.19.211(myid=211) slave1  192.168.19.212(myid=212) slave2ZooKeeper集群配置安装ZooKeeper集群，在上面3分节点上分别安装，使用的版本是zookeeper-3.4.5。首先在master上安装配置：{% highlight bash %}cd /tmpwget -N http://mirrors.cnnic.cn/apache...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-10 21:38:02 +0800" class="post-list__meta--date date">2014-06-10</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/zookeeper-solr-tomcat/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/git-configs-and-cammands/" title="link to Git配置和常用命令">Git配置和常用命令</a></h2>
+       <p class="excerpt">Git是一个分布式版本控制／软件配置管理软件，原来是linux内核开发者林纳斯·托瓦兹（Linus Torvalds）为了更好地管理linux内核开发而创立的。Git配置git config --global user.name "felics"git config --global user.email "huangthink@gmail.com"git config --global color.ui truegit config --global alias.co checkoutg...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-04-25 10:28:49 +0800" class="post-list__meta--date date">2014-04-25</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/git-configs-and-cammands/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/github-octopress/";
+        this.page.identifier = "/github-octopress/";
+    };
+
+    var disqus_shortname = 'felics';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+-->
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">&copy; 2021  Trendy Man.  本博客由<a href="https://jekyllrb.com"> Jekyll </a>生成 使用<a href="https://github.com/onevcat/vno-jekyll"> Vno-Jekyll </a>作为主题</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

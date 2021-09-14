@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>使用MAT(Memory Analyzer Tool)分析内存泄漏</title>
+  <meta name="description" content="在工作中，有时会遇到OutOfMemoryError，我们知道遇到Error一般表明程序存在着严重问题，可能是灾难性的。所以找出是什么原因造成OutOfMemoryError非常重要。Memory Analyzer tool(MAT)来化解我们遇到的难题。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="使用MAT(Memory Analyzer Tool)分析内存泄漏">
+  <meta name="twitter:description" content="在工作中，有时会遇到OutOfMemoryError，我们知道遇到Error一般表明程序存在着严重问题，可能是灾难性的。所以找出是什么原因造成OutOfMemoryError非常重要。Memory Analyzer tool(MAT)来化解我们遇到的难题。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="使用MAT(Memory Analyzer Tool)分析内存泄漏">
+  <meta property="og:description" content="在工作中，有时会遇到OutOfMemoryError，我们知道遇到Error一般表明程序存在着严重问题，可能是灾难性的。所以找出是什么原因造成OutOfMemoryError非常重要。Memory Analyzer tool(MAT)来化解我们遇到的难题。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/memory-analyzer-tool/">
+  <link rel="alternate" type="application/rss+xml" title="Trendy Man" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Trendy Man 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Trendy Man logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Trendy Man" class="blog-button">Trendy Man</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">a backend developer</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">万物之中 希望至美 至美之物 永不凋零</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Life@Shanghai Work@Meituan</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/princecharming" title="@princecharming 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/trendystar" title="@trendystar 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+  <!-- Twitter -->
+  <li class="navigation__item">
+    <a href="http://twitter.com/huangthink" title="@huangthink" target="_blank">
+      <i class='social fa fa-twitter'></i>
+      <span class="label">Twitter</span>
+    </a>
+  </li>
+  
+
+  
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:huangthink@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-gray-lightest"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2015-07-08 18:21:16 +0800" itemprop="datePublished" class="post-meta__date date">2015-07-08</time> &#8226; <span class="post-meta__tags tags">能工巧匠</span>
+    </div>
+    <h1 class="post-title">使用MAT(Memory Analyzer Tool)分析内存泄漏</h1>
+  </header>
+
+  <section class="post">
+    <p>在工作中，有时会遇到OutOfMemoryError，我们知道遇到Error一般表明程序存在着严重问题，可能是灾难性的。所以找出是什么原因造成OutOfMemoryError非常重要。Memory Analyzer tool(MAT)来化解我们遇到的难题。</p>
+
+<!-- more -->
+
+<p>从可用内存和请求数量的变化情况判断是突发性的内存泄露还是不断积累的结果换句话说，首先定位内存泄露的性质：</p>
+
+<p>突发内存泄露：</p>
+
+<ul>
+  <li>表现：可用内存直线下降，短时间内消耗殆尽。</li>
+  <li>原因：定时任务执行、用户集中访问等，频繁调用有内存泄露的代码块。</li>
+  <li>排查：这种情况相对比较容易定位问题，查看可用内存骤降的时间点，从日志中查找对应时间点系统的行为（前提是日志必须很规范，有据可循）。</li>
+</ul>
+
+<p>隐式内存泄露：</p>
+
+<ul>
+  <li>表现：可用内存持续下降，随着系统运行不断减少。</li>
+  <li>原因：偶发性调用到有内存泄露的代码块。</li>
+  <li>排查：这种情况需要借助dump文件和内存分析工具来排查。常用方式：在系统启动后获取dump文件，运行一段时间后（可用内存明显减少），再次获取dump文件（如果触发了JVM的OOM，可以直接拿到dump），对比前后两个时间点的内存占用情况，找出占用内存大幅增长的类。如果足够明显，可以直接从自动生成的dump文件中发现占用内存过多的类。</li>
+</ul>
+
+<p>分析不同服务器的内存使用情况可以进一步缩小排查范围</p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GLkC4/z6DV7.jpg" alt="" /></p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GLZIg/SIDUg.jpg" alt="" /></p>
+
+<h3 id="使用jmap工具生成dump文件">使用jmap工具生成dump文件</h3>
+
+<p>jmap是什么？简单来说，jmap是JDK自带的一种用于生成内存镜像文件的工具，通过该工具，开发人员可以快速生成dump文件。</p>
+
+<blockquote>
+  <p>进入目录：/usr/java/jdk1.6.0_33/bin</p>
+
+  <p>找到服务的进程ID：<code class="highlighter-rouge">ps –ef | grep search</code></p>
+
+  <p>执行命令：<code class="highlighter-rouge">jmap -dump:format=b,file=&lt;path&lt;PID&gt;</code></p>
+
+  <p>下载dump文件至本地</p>
+</blockquote>
+
+<h3 id="mat工具的下载和安装">MAT工具的下载和安装</h3>
+
+<p>MemoryAnalyzer.ini	可以设置最大/最小堆内存，与eclipse.ini配置类似</p>
+
+<h3 id="使用mat工具进行内存泄露分析">使用MAT工具进行内存泄露分析</h3>
+
+<p>当成功启动MAT后，通过菜单选项“File-&gt;Open heap dump…”打开指定的dump文件后，将会生成Overview选项，在概况中可以初步查看占用内存最多的几个类以及对应的一些属性、引用层次和统计信息</p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GMiDK/WVSID.png" alt="" /></p>
+
+<p>在Overview选项中，以饼状图的形式列举出了程序内存消耗的一些基本信息，其中每一种不同颜色的饼块都代表了不同比例的内存消耗情况。如果说需要定位内存泄露的代码点，我们可以通过Dominator Tree菜单选项来进行排查(MAT工具仅仅只是一个辅助，分析OutofMemory并不存在一个固定的方式和准则，因此仔细观察和分析才能够找到问题所在)</p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GMwlh/VM8YV.png" alt="" /></p>
+
+<p>Histogram图表中主要统计了消耗占比较高的类的实例数量及占用空间，Shallow Size: 对象自身占用的内存大小，不包括它引用的对象Retained Size: 当前对象大小 + 当前对象直接或间接引用的对象大小的总和 - 被GC Roots直接或间接引用的对象大小的总和</p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GLXOt/jq1E4.png" alt="" /></p>
+
+<p>Top Consumers图表可以更直观地看到内存消耗占比最多的类，由于很多类都囊括在ClassLoader中，因此还需要进一步查看引用的层级。如果一次观察的结果不够明显，可以对比不同服务器（不同组）、不同时间点的内存使用情况，进一步缩小排查范围。</p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GMkFO/WspKs.png" alt="" /></p>
+
+<p>List objects with outgoing/incoming references 根据引用层级查看问题根源</p>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GMuF4/pSdwz.png" alt="" /></p>
+
+<p>Leak suspects，MAT可以自动生成可疑泄露点的报告，能够从以下几点全面分析问题：</p>
+
+<ul>
+  <li>Shortest Paths To the Accumulation Point</li>
+  <li>Accumulated Objects in Dominator Tree</li>
+  <li>Accumulated Objects by Class in Dominator Tree</li>
+  <li>All Accumulated Objects by Class</li>
+</ul>
+
+<p><img src="http://pic.yupoo.com/hunng/ER0GNebl/kV2eP.png" alt="" /></p>
+
+  </section>
+</article>
+
+<!--<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/luence-notes/" title="link to Lucene学习笔记">Lucene学习笔记</a></h2>
+       <p class="excerpt">  概要：      全文检索的原理和基本概念（铺垫）    Lucene简介，索引文档和检索文档的过程（主要）    Lucene 相似度评分算法（拓展）  全文检索原理（铺垫）数据分类生活中的数据总体分为三种：  结构化数据，固定格式和长度，如数据库数据，元数据等  非结构化数据，无固定格式和长度，如邮件，word文档，商品描述信息，非结构化数据也称为为全文数据  半结构化数据，如XML，HTML等，当然根据需要按结构化数据来处理，也可抽取出纯文本按非结构化数据来处理搜索分类按照数据的...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2016-06-06 12:18:02 +0800" class="post-list__meta--date date">2016-06-06</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/luence-notes/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/zookeeper-solr-tomcat/" title="link to Zookeeper、Solr和Tomcat安装配置实践">Zookeeper、Solr和Tomcat安装配置实践</a></h2>
+       <p class="excerpt">三台服务器:  192.168.19.210(myid=210) master  192.168.19.211(myid=211) slave1  192.168.19.212(myid=212) slave2ZooKeeper集群配置安装ZooKeeper集群，在上面3分节点上分别安装，使用的版本是zookeeper-3.4.5。首先在master上安装配置：cd /tmpwget -N http://mirrors.cnnic.cn/apache/zookeeper/zookeeper...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-10 21:38:02 +0800" class="post-list__meta--date date">2014-06-10</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/zookeeper-solr-tomcat/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/memory-analyzer-tool/";
+        this.page.identifier = "/memory-analyzer-tool/";
+    };
+
+    var disqus_shortname = 'felics';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+-->
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">&copy; 2021  Trendy Man.  本博客由<a href="https://jekyllrb.com"> Jekyll </a>生成 使用<a href="https://github.com/onevcat/vno-jekyll"> Vno-Jekyll </a>作为主题</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

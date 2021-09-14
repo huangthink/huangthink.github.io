@@ -1,11 +1,11 @@
 # Basic
-title: Trendy's Den
-subtitle: 万物之中, 希望至美
+title: Trendy Man
+subtitle: a backend developer
 welcome_message: Life@Shanghai Work@Meituan
-description: 嗨，我是Trendy (@trendystar)，一名程序员。
-creator: <a href="https://geekr.me">@TRENDY</a>
+description: 万物之中 希望至美 至美之物 永不凋零
+creator: <a href="https://cqcxy.com">@trendystar</a>
 
-url: "https://geekr.me"
+url: "https://cqcxy.com"
 
 permalink: /:title/
 
@@ -21,8 +21,8 @@ blog_button:
     description: 访问博客
 
 # Navigation buttons in the front page.
-nav:
-    - {title: 简历, description: 我的简历, url: '#'}
+#nav:
+#    - {title: 简历, description: 我的简历, url: '#'}
     # - {title: Another Button, description: A button, url: 'http://example.com'}
 
 # Pagination
@@ -39,6 +39,8 @@ comment:
 social:
     weibo: princecharming
     github: trendystar
+    twitter: huangthink
+    mail: huangthink@gmail.com
 
 # Google Analytics
 ga:

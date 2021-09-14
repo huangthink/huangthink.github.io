@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Elastic Stack安装教程</title>
+  <meta name="description" content="环境准备">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Elastic Stack安装教程">
+  <meta name="twitter:description" content="环境准备">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Elastic Stack安装教程">
+  <meta property="og:description" content="环境准备">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/elastic-stack/">
+  <link rel="alternate" type="application/rss+xml" title="Trendy Man" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Trendy Man 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Trendy Man logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Trendy Man" class="blog-button">Trendy Man</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">a backend developer</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">万物之中 希望至美 至美之物 永不凋零</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Life@Shanghai Work@Meituan</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/princecharming" title="@princecharming 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/trendystar" title="@trendystar 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+  <!-- Twitter -->
+  <li class="navigation__item">
+    <a href="http://twitter.com/huangthink" title="@huangthink" target="_blank">
+      <i class='social fa fa-twitter'></i>
+      <span class="label">Twitter</span>
+    </a>
+  </li>
+  
+
+  
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:huangthink@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-gray-lightest"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-05-18 11:30:28 +0800" itemprop="datePublished" class="post-meta__date date">2017-05-18</time> &#8226; <span class="post-meta__tags tags">能工巧匠</span>
+    </div>
+    <h1 class="post-title">Elastic Stack安装教程</h1>
+  </header>
+
+  <section class="post">
+    <h3 id="环境准备">环境准备</h3>
+
+<ul>
+  <li>CentOS7.1</li>
+  <li>JDK1.8</li>
+  <li>elasticsearch-5.4.3</li>
+</ul>
+
+<h3 id="jdk安装配置">JDK安装配置</h3>
+
+<p>下载地址：http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz</p>
+
+<h3 id="elasticsearch安装配置">elasticsearch安装配置</h3>
+<h4 id="下载解压">下载解压</h4>
+
+<p>使用命令从官网下载最新版本的Elasticsearch压缩包</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd /var/wd
+wget -N https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.tar.gz
+tar -zxf elasticsearch-5.4.3.tar.gz
+ln -s elasticsearch-5.4.3 elasticsearch
+mkdir -p /var/data/elasticsearch
+mkdir -p /var/logs/elasticsearch
+</code></pre></div></div>
+<h4 id="修改配置文件">修改配置文件</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi elasticsearch/config/elasticsearch.yml
+
+cluster.name: elasticstack
+node.name: "10.213.162.77"
+path.data: /var/data/elasticsearch
+path.logs: /var/logs/elasticsearch
+network.host: 0.0.0.0
+http.port: 11200
+discovery.zen.ping.unicast.hosts: ["10.213.162.77", "10.213.162.78", "10.213.162.79"]
+discovery.zen.minimum_master_nodes: 3
+transport.tcp.port: 11300
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi elasticsearch/config/jvm.options
+
+-Xms32g
+-Xmx32g
+</code></pre></div></div>
+
+<h4 id="创建elasticsearch用户组以及elasticsearch用户">创建elasticsearch用户组以及elasticsearch用户</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>groupadd elasticsearch
+useradd  elasticsearch -g elasticsearch -p elasticsearch
+</code></pre></div></div>
+<h4 id="更改相关文件夹以及内部文件的所属用户以及组为elasticsearch">更改相关文件夹以及内部文件的所属用户以及组为elasticsearch</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chown -R elasticsearch:elasticsearch /var/wd/elasticsearch-5.4.3
+chown -R elasticsearch:elasticsearch /var/data/elasticsearch
+chown -R elasticsearch:elasticsearch /var/logs/elasticsearch
+</code></pre></div></div>
+
+<h4 id="修改服务器相关参数">修改服务器相关参数</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>修改vm.map 限制
+sysctl -w vm.max_map_count=262144
+或
+vi /etc/sysctl.conf
+vm.max_map_count=262144
+
+修改文件限制
+ulimit -n 102400
+或
+vi /etc/security/limits.conf
+elasticsearch hard nofile 102400
+elasticsearch soft nofile 102400
+
+</code></pre></div></div>
+
+<h4 id="切换到elasticsearch用户下启动">切换到elasticsearch用户下启动</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>su elasticsearch
+cd /var/wd/elasticsearch
+./bin/elasticsearch
+</code></pre></div></div>
+<p>如果想在后台以守护进程模式运行</p>
+
+<p>打开另一个终端进行测试</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl  'http://10.213.162.77:11200'
+</code></pre></div></div>
+<p>你能看到以下返回信息：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    name: "10.213.162.77",
+    cluster_name: "elasticstack",
+    cluster_uuid: "aHySi7cBS76DyrIe74eIoA",
+    version: {
+        number: "5.4.3",
+        build_hash: "5395e21",
+        build_date: "2016-12-06T12:36:15.409Z",
+        build_snapshot: false,
+        lucene_version: "6.3.0"
+    },
+    tagline: "You Know, for Search"
+}
+</code></pre></div></div>
+
+<p>ELasticsearch集群已经启动并且正常运行。</p>
+
+<h3 id="head安装配置">head安装配置</h3>
+
+<h4 id="安装node">安装node</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd /usr/local
+wget -N https://nodejs.org/dist/v7.2.0/node-v7.2.0-linux-x64.tar.gz
+tar -zxf node-v7.2.0-linux-x64.tar.gz
+ln -s node-v7.2.0-linux-x64 node
+vi /etc/profile
+export PATH=$PATH:/usr/local/node/bin
+source /etc/profile
+</code></pre></div></div>
+<h4 id="安装grunt">安装grunt</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g grunt-cli
+</code></pre></div></div>
+
+<h4 id="安装head">安装head</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone git://github.com/mobz/elasticsearch-head.git
+
+</code></pre></div></div>
+<h5 id="修改gruntfilejs">修改Gruntfile.js</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>connect: {
+    server: {
+        options: {
+            port: 11100,
+            hostname: '*',
+            base: '.',
+            keepalive: true
+        }
+    }
+}
+</code></pre></div></div>
+
+<h5 id="修改appjs">修改app.js</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http://10.213.162.77:11200";
+</code></pre></div></div>
+
+<h5 id="运行head">运行head</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install 
+grunt server
+</code></pre></div></div>
+
+<h3 id="kibana安装配置">Kibana安装配置</h3>
+
+<p>使用命令从官网下载最新版本的Elasticsearch压缩包，按照文档的要求，一般情况下kibana的版本必须和Elasticsearch安装的版本一致。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd /var/wd
+wget -N https://artifacts.elastic.co/downloads/kibana/kibana-5.4.3-linux-x86_64.tar.gz
+tar -zxf kibana-5.4.3-linux-x86_64.tar.gz
+ln -s kibana-5.4.3 kibana
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi kibana/config/kibana.yml
+
+server.port: 11601
+server.host: "0.0.0.0"
+elasticsearch.url: "http://10.213.162.78:11200"
+elasticsearch.username: "elastic"
+elasticsearch.password: "elastic"
+</code></pre></div></div>
+<h3 id="x-pack安装配置">X-Pack安装配置</h3>
+
+<p>X-Pack是一个Elastic Stack的扩展，将安全，警报，监视，报告和图形功能包含在一个易于安装的软件包中。在Elasticsearch 5.0.0之前，您必须安装单独的Shield，Watcher和Marvel插件才能获得在X-Pack中所有的功能。</p>
+
+<h4 id="elasticsearch下载x-pack">Elasticsearch下载X-Pack</h4>
+
+<p>在es的根目录（每个节点），运行 <code class="highlighter-rouge">bin/elasticsearch-plugin</code> 进行安装</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin/elasticsearch-plugin install x-pack
+</code></pre></div></div>
+
+<p>如果你在Elasticsearch已禁用自动索引的创建，在<code class="highlighter-rouge">elasticsearch.yml</code>配置<code class="highlighter-rouge">action.auto_create_index</code>允许X-pack创造以下指标</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action.auto_create_index: .security,.monitoring*,.watches,.triggered_watches,.watcher-history*
+</code></pre></div></div>
+
+<h4 id="kibana下载x-pack">Kibana下载X-Pack</h4>
+
+<p>在Kibana根目录运行 <code class="highlighter-rouge">bin/kibana-plugin</code> 进行安装</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin/kibana-plugin install x-pack
+</code></pre></div></div>
+
+<h4 id="验证x-pack">验证X-Pack</h4>
+
+<p>在浏览器上输入： <code class="highlighter-rouge">http://10.213.162.77:11601</code> ，可以打开Kibana，此时需要输入用户名和密码登录，默认分别是 <code class="highlighter-rouge">elastic</code> 和 <code class="highlighter-rouge">changeme</code></p>
+
+<h3 id="安装参考">安装参考</h3>
+
+<ol>
+  <li>每个操作系统安装Elasticsearch的文件选择不同，参考：<code class="highlighter-rouge">https://www.elastic.co/downloads/elasticsearch</code>，选择对应的文件下载。</li>
+  <li>安装Kiabna需要根据操作系统做选择，参考：<code class="highlighter-rouge">https://www.elastic.co/guide/en/kibana/current/install.html</code>，选择对应的文件下载。</li>
+  <li>安装X-Pack需要根据Elasticsearch安装不同的方式提供不同的安装方法，参考：<code class="highlighter-rouge">https://www.elastic.co/guide/en/x-pack/5.4/installing-xpack.html#installing-xpack</code>。</li>
+  <li>离线安装</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./bin/elasticsearch-plugin install file:///var/wd/x-pack-5.4.3.zip
+./bin/kibana-plugin install file:///var/wd/x-pack-5.4.3.zip
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>App</th>
+      <th>URL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>x-pack</td>
+      <td>https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.4.3.zip</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="logstash安装">Logstash安装</h3>
+
+<p>Logstash 是一款强大的数据处理工具，它可以实现数据传输，格式处理，格式化输出，还有强大的插件功能，常用于日志处理。</p>
+
+<h4 id="logstash版本要求">logstash版本要求</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kafka Client Version</th>
+      <th>Logstash Version</th>
+      <th>Plugin Version</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0.8</td>
+      <td>2.0.0 - 2.x.x</td>
+      <td>&lt;3.0.0</td>
+      <td>Legacy, 0.8 is still popular</td>
+    </tr>
+    <tr>
+      <td>0.9</td>
+      <td>2.0.0 - 2.3.x</td>
+      <td>3.x.x</td>
+      <td>Works with the old Ruby Event API (event[‘product’][‘price’] = 10)</td>
+    </tr>
+    <tr>
+      <td>0.9</td>
+      <td>2.4.x - 5.x.x</td>
+      <td>4.x.x</td>
+      <td>Works with the new getter/setter APIs (event.set(‘[product][price]’, 10))</td>
+    </tr>
+    <tr>
+      <td>0.10.0.x</td>
+      <td>2.4.x - 5.x.x</td>
+      <td>5.x.x</td>
+      <td>Not compatible with the ⇐ 0.9 broker</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="logstash下载安装">logstash下载安装</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd /var/wd/
+wget -c https://artifacts.elastic.co/downloads/logstash/logstash-5.4.3.tar.gz
+tar -xzvf logstash-5.4.3.tar.gz
+ln -s logstash-5.4.3 logstash
+cd logstash
+</code></pre></div></div>
+<h4 id="日志采集filebeat配置">日志采集filebeat配置</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir plugin-config
+vi plugin-config/filebeat.conf
+
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input {
+    beats {
+        port =&gt; "11044"
+    }
+}
+
+filter {
+   grok {
+        match =&gt; ["message", "%{TIMESTAMP_ISO8601:timestamp} \[%{SYSLOGPROG:thread}\] %{LOGLEVEL:level}"]
+        remove_field =&gt; [ "beat","tags","type","program"]
+        add_field =&gt; {"app" =&gt; "%{[fields][app]}" }
+      }
+   ruby {
+        code =&gt; "event.set('esUpdateTime', event.get('@timestamp').time.localtime + 8*60*60)
+        event.set('type', event.get('app'))"
+      }
+  }
+  
+output {
+  kafka {
+   # codec =&gt; plain {
+   #    format =&gt; "%{message}"
+   # }
+    codec =&gt; json
+    topic_id =&gt; "feeds-log"
+    bootstrap_servers =&gt; "10.213.131.140:12015,10.213.45.168:12015,10.213.59.97:12015,10.213.59.99:12015"
+    compression_type =&gt; "snappy"
+  }
+}
+</code></pre></div></div>
+<h4 id="日志转发kafka配置">日志转发kafka配置</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir plugin-config
+vi plugin-config/kafka.conf
+
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input{
+    kafka{
+        codec =&gt; "json"
+        group_id =&gt; "feeds-log-logstash"
+        topics =&gt; ["feeds-log"]
+        bootstrap_servers =&gt; "10.213.131.140:12015,10.213.45.168:12015,10.213.59.97:12015,10.213.59.99:12015"
+    }
+}
+
+filter {
+   grok {
+        match =&gt; ["message", "%{TIMESTAMP_ISO8601:timestamp} \[%{SYSLOGPROG:thread}\] %{LOGLEVEL:level}"]
+        overwrite =&gt; ["timestamp","thread","level"]
+        remove_field =&gt; [ "beat","tags","program","fields"]
+    }
+output{
+    elasticsearch{
+        hosts=&gt;["10.213.131.131:11200","10.213.131.132:11200","10.213.131.132:11200"]
+        index =&gt; "feeds-log-%{+YYYYMM}"
+        document_type =&gt; "%{type}"
+        #flush_size=&gt;20000
+        #idle_flush_time=&gt;10
+        #template_overwrite=&gt;true
+    }
+}
+</code></pre></div></div>
+
+<h4 id="启动logstash">启动logstash</h4>
+
+<p>控台启动，观察错误日志，没问题在后台启动</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin/logstash -f plugin-config/filebeat.conf --config.reload.automatic
+</code></pre></div></div>
+
+<h3 id="filebeat安装">Filebeat安装</h3>
+
+<p>Beats 平台是 Elastic.co 从 packetbeat 发展出来的数据收集器系统。beat 收集器可以直接写入 Elasticsearch，也可以传输给 Logstash。其中抽象出来的 libbeat，提供了统一的数据发送方法，输入配置解析，日志记录框架等功能。也就是说，所有的 beat 工具，在配置上，除了 input 以外，在output、filter、shipper、logging、run-options 上的配置规则都是完全一致的 ，filebeat是beat中的一员。</p>
+
+<h4 id="filebeat下载">filebeat下载</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd /var/wd/
+wget -c https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-linux-x86_64.tar.gz
+tar -xzvf filebeat-5.4.3-linux-x86_64.tar.gz
+cd filebeat-5.4.3-linux-x86_64
+</code></pre></div></div>
+<p>这里安装的是bit版，也可以选择rpm版本安装</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget -c https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-x86_64.rpm
+
+</code></pre></div></div>
+
+<h4 id="filebeat配置">filebeat配置</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi filebeat.yml
+</code></pre></div></div>
+<p>添加数据源</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- input_type: log
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    - /var/wd/feeds_api/logs/feeds_api_info.log
+</code></pre></div></div>
+
+<p>添加字段标示产生日志应用</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  fields:
+     app: feeds-api
+</code></pre></div></div>
+
+<p>指定输出</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>output.logstash:
+  # The Logstash hosts
+  hosts: ["10.213.131.132:11044","10.213.131.131:11044"]
+  worker: 2
+  loadbalance: true
+  index: feeds-log
+</code></pre></div></div>
+
+<h4 id="启动关闭脚本">启动关闭脚本</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi startup.sh
+
+#!/bin/bash
+nohup ./filebeat -e -c filebeat.yml -d publish  &amp;
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi shutdown.sh
+
+#!/bin/bash
+runningPID=`pgrep -f "./filebeat -e -c filebeat.yml -d publish"`
+if [ "$runningPID" ]; then
+      echo "filebeat pid: $runningPID"
+      kill -15 $runningPID
+fi
+sleep 2
+</code></pre></div></div>
+
+
+  </section>
+</article>
+
+<!--<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/elasticsearch-architecture/" title="link to Elasticsearch架构原理">Elasticsearch架构原理</a></h2>
+       <p class="excerpt">架构原理本书作为 Elastic Stack 指南，关注于 Elasticsearch 在日志和数据分析场景的应用，并不打算对底层的 Lucene 原理或者 Java 编程做详细的介绍，但是 Elasticsearch 层面上的一些架构设计，对我们做性能调优，故障处理，具有非常重要的影响。所以，作为 ES 部分的起始章节，先从数据流向和分布的层面，介绍一下 ES 的工作原理，以及相关的可控项。各位读者可以跳过这节先行阅读后面的运维操作部分，但作为性能调优的基础知识，依然建议大家抽时间返回来...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-08-06 14:58:02 +0800" class="post-list__meta--date date">2017-08-06</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/elasticsearch-architecture/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/luence-notes/" title="link to Lucene学习笔记">Lucene学习笔记</a></h2>
+       <p class="excerpt">  概要：      全文检索的原理和基本概念（铺垫）    Lucene简介，索引文档和检索文档的过程（主要）    Lucene 相似度评分算法（拓展）  全文检索原理（铺垫）数据分类生活中的数据总体分为三种：  结构化数据，固定格式和长度，如数据库数据，元数据等  非结构化数据，无固定格式和长度，如邮件，word文档，商品描述信息，非结构化数据也称为为全文数据  半结构化数据，如XML，HTML等，当然根据需要按结构化数据来处理，也可抽取出纯文本按非结构化数据来处理搜索分类按照数据的...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2016-06-06 12:18:02 +0800" class="post-list__meta--date date">2016-06-06</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/luence-notes/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/elastic-stack/";
+        this.page.identifier = "/elastic-stack/";
+    };
+
+    var disqus_shortname = 'felics';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+-->
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">&copy; 2021  Trendy Man.  本博客由<a href="https://jekyllrb.com"> Jekyll </a>生成 使用<a href="https://github.com/onevcat/vno-jekyll"> Vno-Jekyll </a>作为主题</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

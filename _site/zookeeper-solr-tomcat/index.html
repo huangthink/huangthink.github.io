@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Zookeeper、Solr和Tomcat安装配置实践</title>
+  <meta name="description" content="三台服务器:">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Zookeeper、Solr和Tomcat安装配置实践">
+  <meta name="twitter:description" content="三台服务器:">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Zookeeper、Solr和Tomcat安装配置实践">
+  <meta property="og:description" content="三台服务器:">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/zookeeper-solr-tomcat/">
+  <link rel="alternate" type="application/rss+xml" title="Trendy Man" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Trendy Man 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Trendy Man logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Trendy Man" class="blog-button">Trendy Man</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">a backend developer</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">万物之中 希望至美 至美之物 永不凋零</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Life@Shanghai Work@Meituan</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/princecharming" title="@princecharming 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/trendystar" title="@trendystar 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+  <!-- Twitter -->
+  <li class="navigation__item">
+    <a href="http://twitter.com/huangthink" title="@huangthink" target="_blank">
+      <i class='social fa fa-twitter'></i>
+      <span class="label">Twitter</span>
+    </a>
+  </li>
+  
+
+  
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:huangthink@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-gray-lightest"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2014-06-10 21:38:02 +0800" itemprop="datePublished" class="post-meta__date date">2014-06-10</time> &#8226; <span class="post-meta__tags tags">能工巧匠</span>
+    </div>
+    <h1 class="post-title">Zookeeper、Solr和Tomcat安装配置实践</h1>
+  </header>
+
+  <section class="post">
+    <h3 id="三台服务器">三台服务器:</h3>
+
+<ul>
+  <li>192.168.19.210(myid=210) master</li>
+  <li>192.168.19.211(myid=211) slave1</li>
+  <li>192.168.19.212(myid=212) slave2</li>
+</ul>
+
+<!-- more -->
+
+<h3 id="zookeeper集群配置">ZooKeeper集群配置</h3>
+
+<p>安装ZooKeeper集群，在上面3分节点上分别安装，使用的版本是zookeeper-3.4.5。首先在master上安装配置：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /tmp
+wget <span class="nt">-N</span> http://mirrors.cnnic.cn/apache/zookeeper/zookeeper-3.4.5/zookeeper-3.4.5.tar.gz
+<span class="nb">tar</span> <span class="nt">-zxf</span> zookeeper-3.4.5.tar.gz
+<span class="nb">mv</span> ./zookeeper-3.4.5 /opt/zookeeper
+<span class="nb">mkdir</span> /opt/zookeeper/data
+<span class="nb">mkdir</span> /opt/zookeeper/logs
+	
+<span class="nb">echo</span> <span class="s1">'tickTime=2000'</span> <span class="o">&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'initLimit=10'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'syncLimit=5'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'dataDir=/opt/zookeeper/data'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'dataLogDir=/opt/zookeeper/logs'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'clientPort=2181'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'server.210=master:2888:3888'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'server.211=slave1:2888:3888'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'server.212=slave2:2888:3888'</span> <span class="o">&gt;&gt;</span> /opt/zookeeper/conf/zoo.cfg
+<span class="nb">echo</span> <span class="s1">'210'</span> <span class="o">&gt;</span> /opt/zookeeper/data/myid</code></pre></figure>
+
+<p>然后将master上的zookeeper复制到其他两个节点上：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp -r /opt/zookeeper root@slave1:/opt/
+scp -r /opt/zookeeper root@slave2:/opt/
+</code></pre></div></div>
+
+<p>修改slave1、slave2的myid文件：</p>
+
+<p><code class="highlighter-rouge">vi /opt/zookeeper/data/myid</code></p>
+
+<p>其他设置：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">开机启动
+<span class="nb">echo</span> <span class="s1">'/opt/zookeeper/bin/zkServer.sh start'</span> <span class="o">&gt;&gt;</span> /etc/rc.d/rc.local
+环境变量
+<span class="nb">echo</span> <span class="s1">'export PATH=$PATH:/opt/zookeeper/bin'</span> <span class="o">&gt;&gt;</span> /etc/profile
+<span class="nb">source</span> /etc/profile
+ZooKeeper服务命令
+/opt/zookeeper/bin/zkServer.sh start
+/opt/zookeeper/bin/zkServer.sh status
+/opt/zookeeper/bin/zkServer.sh stop
+/opt/zookeeper/bin/zkServer.sh restart</code></pre></figure>
+
+<h3 id="solrcloud配置">SolrCloud配置</h3>
+
+<h5 id="首先在一个节点上对solr进行配置我们选择master节点">首先在一个节点上对SOLR进行配置，我们选择master节点。</h5>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /tmp
+wget <span class="nt">-N</span> http://archive.apache.org/dist/lucene/solr/4.2.1/solr-4.2.1.tgz
+<span class="nb">tar</span> <span class="nt">-zxf</span> solr-4.2.1.tgz
+<span class="nb">mkdir</span> <span class="nt">-p</span> /opt/solr/webapps
+<span class="nb">cd</span> /opt/solr/webapps
+jar <span class="nt">-xf</span> /tmp/solr-4.2.1/example/webapps/solr.war
+<span class="nb">mkdir</span> <span class="nt">-p</span> /opt/solr/home</code></pre></figure>
+
+<p>vi /opt/solr/home/solr.xml</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="nt">&lt;solr</span> <span class="na">persistent=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;cores</span> <span class="na">defaultCoreName=</span><span class="s">"Designer"</span> <span class="na">adminPath=</span><span class="s">"/admin/cores"</span> <span class="na">host=</span><span class="s">"${host:}"</span> <span class="na">hostPort=</span><span class="s">"${jetty.port:}"</span> <span class="na">zkClientTimeout=</span><span class="s">"${zkClientTimeout:15000}"</span><span class="nt">&gt;</span>
+	 <span class="nt">&lt;/cores&gt;</span>
+<span class="nt">&lt;/solr&gt;</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"> <span class="c">#master's lib</span>
+<span class="nb">ln</span> <span class="nt">-s</span> /opt/solr/webapps/WEB-INF/lib /opt/solr/lib
+ <span class="c">#master's conf</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> /opt/solr/conf</code></pre></figure>
+
+<p>注意：这里并没有配置任何的core元素，等到整个配置安装完成之后，通过SOLR提供的REST接口，来实现Collection以及Shard的创建，从而来更新这些配置文件。</p>
+
+<h4 id="zookeeper管理监控配置文件">ZooKeeper管理监控配置文件:</h4>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">cp</span> <span class="o">.:/</span><span class="n">opt</span><span class="o">/</span><span class="n">solr</span><span class="o">/</span><span class="n">lib</span><span class="o">/*</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">solr</span><span class="o">.</span><span class="na">cloud</span><span class="o">.</span><span class="na">ZkCLI</span> <span class="o">-</span><span class="n">cmd</span> <span class="n">upconfig</span> <span class="o">-</span><span class="n">zkhost</span> <span class="nl">master:</span><span class="mi">2181</span><span class="o">,</span><span class="nl">slave1:</span><span class="mi">2181</span><span class="o">,</span><span class="nl">slave1:</span><span class="mi">2181</span> <span class="o">-</span><span class="n">confdir</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">solr</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">Designer</span> <span class="o">-</span><span class="n">confname</span> <span class="n">Designer</span> <span class="o">-</span><span class="n">solrhome</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">solr</span><span class="o">/</span><span class="n">home</span></code></pre></figure>
+
+<p>检查一下ZooKeeper上的存储情况：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /opt/zookeeper
+bin/zkCli.sh <span class="nt">-server</span> master:2181
+<span class="nb">ls</span> /
+<span class="nb">ls</span> /configs</code></pre></figure>
+
+<h4 id="tomcat配置与启动">Tomcat配置与启动:</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">mkdir</span> <span class="nt">-p</span> /opt/tomcat/conf/Catalina/localhost
+vi /opt/tomcat/conf/Catalina/localhost/solr.xml</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="nt">&lt;Context</span> <span class="na">docBase=</span><span class="s">"/opt/solr/webapps"</span> <span class="na">reloadable=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+	  <span class="nt">&lt;Environment</span> <span class="na">name=</span><span class="s">"solr/home"</span> <span class="na">type=</span><span class="s">"java.lang.String"</span> <span class="na">value=</span><span class="s">"/opt/solr/home"</span> <span class="na">override=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/Context&gt;</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">	
+	<span class="err">#</span><span class="n">tomcat</span> <span class="n">catelina</span><span class="o">.</span><span class="na">sh</span>
+	<span class="n">vi</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">tomcat</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">catalina</span><span class="o">.</span><span class="na">sh</span>
+	<span class="n">JAVA_OPTS</span><span class="o">=</span><span class="s">"
+	 -Xmx6G
+	 -Xms6G
+	 -Xss256K
+	 -Xmn2300M
+	 -XX:SurvivorRatio=5
+	 -XX:+UseParNewGC
+	 -XX:PermSize=128M
+	 -XX:MaxPermSize=128M
+	 -XX:MaxDirectMemorySize=768m
+	 -XX:LargePageSizeInBytes=128m
+	 -XX:+DisableExplicitGC
+	 -XX:SoftRefLRUPolicyMSPerMB=0
+	 -XX:+OptimizeStringConcat
+	 -XX:+UseFastAccessorMethods
+	 -XX:CompileThreshold=100
+	 -XX:+AggressiveOpts
+	 -XX:+TieredCompilation
+	 -XX:+DoEscapeAnalysis
+	 -XX:+UseBiasedLocking
+	 -XX:+EliminateLocks
+	 -XX:BiasedLockingStartupDelay=0
+	 -XX:+UseConcMarkSweepGC
+	 -XX:CMSInitiatingOccupancyFraction=70
+	 -XX:+UseCMSCompactAtFullCollection
+	 -XX:CMSFullGCsBeforeCompaction=2
+	 -XX:+CMSParallelRemarkEnabled
+	 -XX:+UseCMSInitiatingOccupancyOnly
+	 -XX:+CMSClassUnloadingEnabled
+	 -XX:+CMSPermGenPrecleaningEnabled
+	 -Dsun.net.inetaddr.ttl=0
+	 -Dnetworkaddress.cache.ttl=30
+	 -Djava.awt.headless=true
+	 -DAllowManagedFieldsInDefaultFetchGroup=true
+	 -DAllowMediatedWriteInDefaultFetchGroup=true
+	 
+	 -Djetty.port=8080
+	 -DzkHost=master:2181,slave1:2181,slave2:2181
+	 -DzkClientTimeout=15000
+	"</span></code></pre></figure>
+
+<p>tomcat 常用命令：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"> <span class="c">#启动</span>
+/opt/tomcat/bin/startup.sh
+ <span class="c">#查看日志</span>
+<span class="nb">tail</span> <span class="nt">-f</span> /opt	/tomcat/logs/catalina.out</code></pre></figure>
+
+<p>查看一下ZooKeeper中的数据状态：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /opt/zookeeper
+bin/zkCli.sh <span class="nt">-server</span> master:2181
+<span class="nb">ls</span> /
+<span class="nb">ls</span> /live_nodes
+<span class="nb">ls</span> /collections</code></pre></figure>
+
+<p>这时候，SolrCloud集群中只有一个活跃的节点，而且默认生成了一个Designer实例，这个实例实际上虚拟的，因为通过web界面无法访问master:8080/solr，看不到任何有关SolrCloud的信息.</p>
+
+<h4 id="同步数据和配置信息启动其他节点">同步数据和配置信息，启动其他节点</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">scp <span class="nt">-r</span> /opt/tomcat/ root@slave1:/opt/
+scp <span class="nt">-r</span> /opt/tomcat/ root@slave2:/opt/
+scp <span class="nt">-r</span> /opt/solr/ root@slave1:/opt/
+scp <span class="nt">-r</span> /opt/solr/ root@slave2:/opt/</code></pre></figure>
+
+<p>启动其他Solr服务器节点：</p>
+
+<p><code class="highlighter-rouge">/opt/tomcat/bin/startup.sh</code></p>
+
+<p>查看ZooKeeper集群中数据状态：</p>
+
+<p><code class="highlighter-rouge">ls /live_nodes</code></p>
+
+<p>这时已经存在3个活跃的节点了，但是SolrCloud集群并没有更多信息.</p>
+<h4 id="创建collectionshard和replication">创建Collection、Shard和Replication</h4>
+<h4 id="创建collection及初始shard">创建Collection及初始Shard</h4>
+<p>直接通过REST接口来创建Collection:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">[</span>root@master]<span class="nv">$ </span>curl <span class="s1">'http://master:8080/solr/admin/collections?action=CREATE&amp;name=Article&amp;numShards=3&amp;replicationFactor=1'</span></code></pre></figure>
+
+<p>如果成功，会输出如下响应内容：</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">    <span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+	<span class="nt">&lt;response&gt;</span>
+		<span class="nt">&lt;lst</span> <span class="na">name=</span><span class="s">"responseHeader"</span><span class="nt">&gt;</span>
+			<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"status"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/int&gt;</span>
+			<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"QTime"</span><span class="nt">&gt;</span>4103<span class="nt">&lt;/int&gt;</span>
+		<span class="nt">&lt;/lst&gt;</span>
+		<span class="nt">&lt;lst</span> <span class="na">name=</span><span class="s">"success"</span><span class="nt">&gt;</span>
+			<span class="nt">&lt;lst&gt;</span>
+				<span class="nt">&lt;lst</span> <span class="na">name=</span><span class="s">"responseHeader"</span><span class="nt">&gt;</span>
+					<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"status"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/int&gt;</span>
+					<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"QTime"</span><span class="nt">&gt;</span>3367<span class="nt">&lt;/int&gt;</span>
+				<span class="nt">&lt;/lst&gt;</span>
+				<span class="nt">&lt;str</span> <span class="na">name=</span><span class="s">"core"</span><span class="nt">&gt;</span>Article_shard2_replica1<span class="nt">&lt;/str&gt;</span>
+				<span class="nt">&lt;str</span> <span class="na">name=</span><span class="s">"saved"</span><span class="nt">&gt;</span>/opt/solr/home/solr.xml<span class="nt">&lt;/str&gt;</span>
+			<span class="nt">&lt;/lst&gt;</span>
+			<span class="nt">&lt;lst&gt;</span>
+				<span class="nt">&lt;lst</span> <span class="na">name=</span><span class="s">"responseHeader"</span><span class="nt">&gt;</span>
+					<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"status"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/int&gt;</span>
+					<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"QTime"</span><span class="nt">&gt;</span>3280<span class="nt">&lt;/int&gt;</span>
+				<span class="nt">&lt;/lst&gt;</span>
+				<span class="nt">&lt;str</span> <span class="na">name=</span><span class="s">"core"</span><span class="nt">&gt;</span>Article_shard1_replica1<span class="nt">&lt;/str&gt;</span>
+				<span class="nt">&lt;str</span> <span class="na">name=</span><span class="s">"saved"</span><span class="nt">&gt;</span>/opt/solr/home/solr.xml<span class="nt">&lt;/str&gt;</span>
+			<span class="nt">&lt;/lst&gt;</span>
+			<span class="nt">&lt;lst&gt;</span>
+				<span class="nt">&lt;lst</span> <span class="na">name=</span><span class="s">"responseHeader"</span><span class="nt">&gt;</span>
+					<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"status"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/int&gt;</span>
+					<span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"QTime"</span><span class="nt">&gt;</span>3690<span class="nt">&lt;/int&gt;</span>
+				<span class="nt">&lt;/lst&gt;</span>
+				<span class="nt">&lt;str</span> <span class="na">name=</span><span class="s">"core"</span><span class="nt">&gt;</span>Article_shard3_replica1<span class="nt">&lt;/str&gt;</span>
+				<span class="nt">&lt;str</span> <span class="na">name=</span><span class="s">"saved"</span><span class="nt">&gt;</span>/opt/solr/home/solr.xml<span class="nt">&lt;/str&gt;</span>
+			<span class="nt">&lt;/lst&gt;</span>
+		<span class="nt">&lt;/lst&gt;</span>
+	<span class="nt">&lt;/response&gt;</span></code></pre></figure>
+
+<p>上面链接中的几个参数的含义，说明如下：</p>
+
+<blockquote>
+  <p>name                待创建Collection的名称</p>
+
+  <p>numShards           分片的数量</p>
+
+  <p>replicationFactor   复制副本的数量</p>
+</blockquote>
+
+<p>执行上述操作如果没有异常，已经创建了一个Collection，名称为Article，而且每个节点上存在一个分片。这时，也可以查看ZooKeeper中状态：</p>
+
+<p><code class="highlighter-rouge">ls /collections</code>
+<code class="highlighter-rouge">ls /collections/Article</code></p>
+
+<p>可以通过Web管理页面，访问master:8080/solr/#/~cloud，查看SolrCloud集群的分片信息.
+我们从master节点可以看到，SOLR的配置文件内容，已经发生了变化，如下所示：</p>
+
+<p><code class="highlighter-rouge">cat /opt/solr/home/solr.xml</code></p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">	<span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+	<span class="nt">&lt;solr</span> <span class="na">persistent=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;cores</span> <span class="na">defaultCoreName=</span><span class="s">"Designer"</span> <span class="na">host=</span><span class="s">"${host:}"</span> <span class="na">adminPath=</span><span class="s">"/admin/cores"</span> <span class="na">zkClientTimeout=</span><span class="s">"${zkClientTimeout:15000}"</span> <span class="na">hostPort=</span><span class="s">"${jetty.port:}"</span><span class="nt">&gt;</span>
+				<span class="nt">&lt;core</span> <span class="na">loadOnStartup=</span><span class="s">"true"</span> <span class="na">shard=</span><span class="s">"shard3"</span> <span class="na">instanceDir=</span><span class="s">"Article_shard3_replica1/"</span> <span class="na">transient=</span><span class="s">"false"</span> <span class="na">name=</span><span class="s">"Article_shard3_replica1"</span> <span class="na">collection=</span><span class="s">"Article"</span> <span class="nt">/&gt;</span>
+		<span class="nt">&lt;/cores&gt;</span>
+	<span class="nt">&lt;/solr&gt;</span></code></pre></figure>
+
+<h4 id="创建replication">创建Replication</h4>
+<p>下面对已经创建的初始分片进行复制。 shard1已经在slave1上，我们复制分片到master和slave2上，执行如下命令：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">curl <span class="s1">'http://master:8080/solr/admin/cores?action=CREATE&amp;collection=Aritcle&amp;name=Aritcle_shard1_replica_2&amp;shard=shard1'</span>
+	&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">"1.0"</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">"UTF-8"</span>?&gt;
+	&lt;response&gt;
+		&lt;lst <span class="nv">name</span><span class="o">=</span><span class="s2">"responseHeader"</span><span class="o">&gt;</span>
+			&lt;int <span class="nv">name</span><span class="o">=</span><span class="s2">"status"</span><span class="o">&gt;</span>0&lt;/int&gt;
+			&lt;int <span class="nv">name</span><span class="o">=</span><span class="s2">"QTime"</span><span class="o">&gt;</span>1485&lt;/int&gt;
+		&lt;/lst&gt;
+		&lt;str <span class="nv">name</span><span class="o">=</span><span class="s2">"core"</span><span class="o">&gt;</span>Aritcle_shard1_replica_2&lt;/str&gt;
+		&lt;str <span class="nv">name</span><span class="o">=</span><span class="s2">"saved"</span><span class="o">&gt;</span>/opt/solr/home/solr.xml&lt;/str&gt;
+	&lt;/response&gt;
+	
+curl <span class="s1">'http://master:8080/solr/admin/cores?action=CREATE&amp;collection=Aritcle&amp;name=Aritcle_shard1_replica_3&amp;shard=shard1'</span>
+	&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">"1.0"</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">"UTF-8"</span>?&gt;
+	&lt;response&gt;
+		&lt;lst <span class="nv">name</span><span class="o">=</span><span class="s2">"responseHeader"</span><span class="o">&gt;</span>
+			&lt;int <span class="nv">name</span><span class="o">=</span><span class="s2">"status"</span><span class="o">&gt;</span>0&lt;/int&gt;
+			&lt;int <span class="nv">name</span><span class="o">=</span><span class="s2">"QTime"</span><span class="o">&gt;</span>2543&lt;/int&gt;
+		&lt;/lst&gt;
+		&lt;str <span class="nv">name</span><span class="o">=</span><span class="s2">"core"</span><span class="o">&gt;</span>Aritcle_shard1_replica_3&lt;/str&gt;
+		&lt;str <span class="nv">name</span><span class="o">=</span><span class="s2">"saved"</span><span class="o">&gt;</span>/opt/solr/home/solr.xml&lt;/str&gt;
+	&lt;/response&gt;
+	
+curl <span class="s1">'http://master:8080/solr/admin/cores?action=CREATE&amp;collection=Aritcle&amp;name=Aritcle_shard1_replica_4&amp;shard=shard1'</span>
+	&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">"1.0"</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">"UTF-8"</span>?&gt;
+	&lt;response&gt;
+		&lt;lst <span class="nv">name</span><span class="o">=</span><span class="s2">"responseHeader"</span><span class="o">&gt;</span>
+			&lt;int <span class="nv">name</span><span class="o">=</span><span class="s2">"status"</span><span class="o">&gt;</span>0&lt;/int&gt;
+			&lt;int <span class="nv">name</span><span class="o">=</span><span class="s2">"QTime"</span><span class="o">&gt;</span>2405&lt;/int&gt;
+		&lt;/lst&gt;
+		&lt;str <span class="nv">name</span><span class="o">=</span><span class="s2">"core"</span><span class="o">&gt;</span>Aritcle_shard1_replica_4&lt;/str&gt;
+		&lt;str <span class="nv">name</span><span class="o">=</span><span class="s2">"saved"</span><span class="o">&gt;</span>/opt/solr/home/solr.xml&lt;/str&gt;
+	&lt;/response&gt;</code></pre></figure>
+
+<p>最后的结果是，slave1上的shard1，在master节点上有2个副本，名称为Article_shard1_replica_2和Article_shard1_replica_3，在slave2节点上有一个副本，名称为Article_shard1_replica_4. 也可以通过查看master和slave2上的目录变化，如下所示：</p>
+
+<p><code class="highlighter-rouge">ll /opt/solr/conf/</code></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>总用量 24
+
+drwxrwxr-x. 4 root root 4096 6月   1 09:58 Designer
+drwxrwxr-x. 3 root root 4096 6月   1 15:41 Article_shard1_replica_2
+drwxrwxr-x. 3 root root 4096 6月   1 15:42 Article_shard1_replica_3 
+drwxrwxr-x. 3 hadoop root 4096 6月   1 15:23 Article_shard3_replica1
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">ll /opt/solr/conf/</code></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>总用量 20
+
+drwxrwxr-x. 4 root root 4096 6月   1 14:53 Designer
+drwxrwxr-x. 3 root root 4096 6月   1 15:44 Article_shard1_replica_4
+drwxrwxr-x. 3 root root 4096 6月   1 15:23 Article_shard2_replica1
+</code></pre></div></div>
+
+<p>其中，Article_shard3_replica1和Article_shard2_replica1都是创建Collection的时候自动生成的分片，也就是第一个副本。 通过Web界面，可以更加直观地看到shard1的情况.</p>
+
+<p>我们再次从master节点可以看到，SOLR的配置文件内容，又发生了变化，如下所示：</p>
+
+<p><code class="highlighter-rouge">cat /opt/solr/home/solr.xml</code></p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="nt">&lt;solr</span> <span class="na">persistent=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;cores</span> <span class="na">defaultCoreName=</span><span class="s">"Designer"</span> <span class="na">host=</span><span class="s">"${host:}"</span> <span class="na">adminPath=</span><span class="s">"/admin/cores"</span> <span class="na">zkClientTimeout=</span><span class="s">"${zkClientTimeout:15000}"</span> <span class="na">hostPort=</span><span class="s">"${jetty.port:}"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;core</span> <span class="na">loadOnStartup=</span><span class="s">"true"</span> <span class="na">shard=</span><span class="s">"shard3"</span> <span class="na">instanceDir=</span><span class="s">"Article_shard3_replica1/"</span> <span class="na">transient=</span><span class="s">"false"</span> <span class="na">name=</span><span class="s">"Article_shard3_replica1"</span> <span class="na">collection=</span><span class="s">"Article"</span> <span class="nt">/&gt;</span>
+		<span class="nt">&lt;core</span> <span class="na">loadOnStartup=</span><span class="s">"true"</span> <span class="na">shard=</span><span class="s">"shard1"</span> <span class="na">instanceDir=</span><span class="s">"Article_shard1_replica_2/"</span> <span class="na">transient=</span><span class="s">"false"</span> <span class="na">name=</span><span class="s">"Article_shard1_replica_2"</span> <span class="na">collection=</span><span class="s">"Article"</span> <span class="nt">/&gt;</span>
+		<span class="nt">&lt;core</span> <span class="na">loadOnStartup=</span><span class="s">"true"</span> <span class="na">shard=</span><span class="s">"shard1"</span> <span class="na">instanceDir=</span><span class="s">"Article_shard1_replica_3/"</span> <span class="na">transient=</span><span class="s">"false"</span> <span class="na">name=</span><span class="s">"Article_shard1_replica_3"</span> <span class="na">collection=</span><span class="s">"Article"</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;/cores&gt;</span>
+<span class="nt">&lt;/solr&gt;</span></code></pre></figure>
+
+<p>到此为止，我们已经基于3个物理节点，配置完成了SolrCloud集群。</p>
+
+
+  </section>
+</article>
+
+<!--<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/memory-analyzer-tool/" title="link to 使用MAT(Memory Analyzer Tool)分析内存泄漏">使用MAT(Memory Analyzer Tool)分析内存泄漏</a></h2>
+       <p class="excerpt">在工作中，有时会遇到OutOfMemoryError，我们知道遇到Error一般表明程序存在着严重问题，可能是灾难性的。所以找出是什么原因造成OutOfMemoryError非常重要。Memory Analyzer tool(MAT)来化解我们遇到的难题。从可用内存和请求数量的变化情况判断是突发性的内存泄露还是不断积累的结果换句话说，首先定位内存泄露的性质：突发内存泄露：  表现：可用内存直线下降，短时间内消耗殆尽。  原因：定时任务执行、用户集中访问等，频繁调用有内存泄露的代码块。  排...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2015-07-08 18:21:16 +0800" class="post-list__meta--date date">2015-07-08</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/memory-analyzer-tool/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/github-octopress/" title="link to 用Octopress在Github搭建个人博客">用Octopress在Github搭建个人博客</a></h2>
+       <p class="excerpt">一、安装Octopress运行的必要软件1.Octopress官网及软件下载：      官方首页：http://octopress.org        这里是RubyInstaller下载地址 （码：aurm）。        这里是DevKit下载地址 （码：vkd5）。  2.安装RubyInstaller3.安装DevKit4.启动Ruby命令框，用CD的命令进入你存放DevKit的目录中，执行以下命令继续安装ruby dk.rb initruby dk.rb install二、...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-06 20:38:02 +0800" class="post-list__meta--date date">2014-06-06</time> &#8226; <span class="post-list__meta--tags tags">能工巧匠</span><a class="btn-border-small" href=/github-octopress/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/zookeeper-solr-tomcat/";
+        this.page.identifier = "/zookeeper-solr-tomcat/";
+    };
+
+    var disqus_shortname = 'felics';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+-->
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">&copy; 2021  Trendy Man.  本博客由<a href="https://jekyllrb.com"> Jekyll </a>生成 使用<a href="https://github.com/onevcat/vno-jekyll"> Vno-Jekyll </a>作为主题</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
