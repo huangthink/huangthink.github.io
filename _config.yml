@@ -3,9 +3,9 @@ title: Trendy Man
 subtitle: a backend developer
 welcome_message: Life@Shanghai Work@Meituan
 description: stick to truth, stick to target
-creator: <a href="https://cqcxy.com">@trendystar</a>
+creator: <a href="https://cqcxy.com">@TrendyMan</a>
 
-url: "https://trendystar.github.io"
+url: "https://huangthink.github.io"
 
 permalink: /:title/
 
@@ -38,7 +38,7 @@ comment:
 # Social
 social:
     weibo: princecharming
-    github: trendystar
+    github: huangthink
     twitter: huangthink
     mail: huangthink@gmail.com
 
