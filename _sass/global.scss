@@ -19,12 +19,12 @@ body {
 }
 
 ::selection {
-  background: #1890ff;
+  background: $primary-color;
   color: #ffffff;
 }
 
 ::-moz-selection {
-  background: #1890ff;
+  background: $primary-color;
   color: #ffffff;
 }
 
